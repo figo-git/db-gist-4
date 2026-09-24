@@ -621,6 +621,12 @@ async function pullGist() {
     migrateData(state.memos);
     state.memos = mergeMemos(state.memos, remote);
     saveLocal();
+    renderCalendar();
+    console.log("[同步] 拉取完成，共", countMemos(state.memos), "条备忘");
+}
+
+function countMemos(memos) {
+    return Object.values(memos).reduce((s, arr) => s + (arr || []).filter(m => !m.deleted).length, 0);
 }
 
 async function pushGist() {
@@ -639,6 +645,7 @@ async function pushGist() {
             files: { [FILE_NAME]: { content: JSON.stringify(state.memos) } }
         })
     });
+    console.log("[同步] 推送完成，共", countMemos(state.memos), "条备忘");
 }
 
 function debouncePush() {
@@ -655,9 +662,11 @@ async function fullSync() {
     try {
         setSyncStatus("wait", "同步中...");
         await pullGist();
+        // 拉取后把本地新数据推送回去
         await pushGist();
-        renderCalendar();
-        setSyncStatus("success", "同步成功");
+        const now = new Date().toLocaleTimeString("zh-CN");
+        setSyncStatus("success", `同步成功 · ${countMemos(state.memos)}条 · ${now}`);
+        console.log("[同步] fullSync 完成");
     } catch (e) {
         setSyncStatus("error", e.message);
         console.error(e);
