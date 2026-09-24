@@ -356,9 +356,24 @@ function loadLocal() {
         if (cfg) state.config = JSON.parse(cfg);
         const memosRaw = localStorage.getItem(MEMOS_KEY);
         if (memosRaw) state.memos = JSON.parse(memosRaw);
+        // 兼容旧版数据：v1 的 text/updatedAt → v2 的 content/updateAt，补默认 priority
+        migrateData(state.memos);
     } catch(e) { console.warn(e); }
     document.getElementById("gistToken").value = state.config.token;
     document.getElementById("gistId").value = state.config.gistId;
+}
+
+/* 旧版数据迁移：text→content, updatedAt→updateAt, 补 priority=normal */
+function migrateData(memos) {
+    if (!memos) return;
+    Object.keys(memos).forEach(date => {
+        (memos[date] || []).forEach(m => {
+            if (m.content === undefined && m.text !== undefined) m.content = m.text;
+            if (m.updateAt === undefined && m.updatedAt !== undefined) m.updateAt = m.updatedAt;
+            if (!m.priority) m.priority = "normal";
+            if (m.deleted === undefined) m.deleted = false;
+        });
+    });
 }
 function saveLocal() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.config));
@@ -591,6 +606,8 @@ async function pullGist() {
     if (file && file.content) {
         try { remote = JSON.parse(file.content); } catch(e) {}
     }
+    migrateData(remote);
+    migrateData(state.memos);
     state.memos = mergeMemos(state.memos, remote);
     saveLocal();
 }
