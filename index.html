@@ -17,41 +17,137 @@
     .btn { padding: 8px 14px; border: none; border-radius: 8px; background: #3b82f6; color: #fff; cursor: pointer; font-size: 14px; }
     .btn:hover { background: #2563eb; }
     .btn-secondary { background: #6b7280; }
-    .calendar-wrap { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 2px 8px #00000012; touch-action: pan-y; }
+
+    .calendar-wrap {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 8px #00000012;
+      touch-action: pan-y;
+      overflow: hidden;
+    }
+
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
     .week-name { text-align: center; font-size: 13px; color: #666; padding: 4px; }
-    .day-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day-cell { aspect-ratio: 1/1; border-radius: 8px; padding:4px; font-size:14px; cursor: pointer; border:1px solid #eee; position: relative; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; transition: transform .1s; }
+    .day-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; transform-origin: top center; will-change: transform; }
+
+    .day-cell {
+      aspect-ratio: 1/1;
+      border-radius: 8px;
+      padding: 3px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #eee;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
     .day-cell:active { transform: scale(0.96); }
-    .day-cell .day-num { line-height:1; font-weight:500; }
-    .day-cell .lunar-row { font-size:9px; color:#94a3b8; line-height:1.1; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .day-cell .weather-row { font-size:9px; line-height:1.1; text-align:center; white-space:nowrap; overflow:hidden; }
-    .day-cell .weather-row.w-sun { color:#d97706; }
-    .day-cell .weather-row.w-cloud { color:#64748b; }
-    .day-cell .weather-row.w-rain { color:#3b82f6; }
-    .day-cell .weather-row.w-snow { color:#0ea5e9; }
-    .day-cell .fest-icon { position:absolute; top:2px; right:3px; font-size:14px; line-height:1; }
-    .day-cell.festival { background: linear-gradient(135deg, #fff7ed, #fef3c7); border-color:#f59e0b; }
-    .day-cell.festival .lunar-row { color:#b45309; font-weight:600; }
-    .day-cell.today { border-color:#3b82f6; background:#eff6ff; }
-    .day-cell.has-memo::after { content:""; width:10px; height:10px; background:#64748b; border-radius:50%; position:absolute; bottom:5px; right:5px; box-shadow:0 0 0 2px #fff; }
-    .day-cell.has-important::after { background:#ef4444; width:13px; height:13px; bottom:4px; right:4px; box-shadow:0 0 0 2px #fff,0 0 6px #ef4444; }
-    .modal-mask { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; padding:16px; z-index:99; }
-    .modal-box { background:#fff; border-radius:12px; width:100%; max-width:520px; max-height:90vh; overflow:auto; padding:16px; position:relative; }
-    .modal-box.fest-bg { background-size:cover; background-position:center; }
-    .modal-box.fest-bg::before { content:""; position:absolute; inset:0; background:rgba(255,255,255,0.92); border-radius:12px; }
-    .modal-box.fest-bg > * { position:relative; }
-    .modal-title { font-size:18px; margin-bottom:12px; }
-    textarea, input[type=text], select { width:100%; border:1px solid #ddd; border-radius:8px; padding:10px; font-size:16px; margin:8px 0; background:#fff; }
-    .modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap; }
-    .tip-text { font-size:13px; color:#555; }
-    .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:12px; margin-left:8px; vertical-align:middle; }
-    .badge-important { background:#fee2e2; color:#dc2626; }
-    .badge-normal { background:#e2e8f0; color:#475569; }
-    .badge-holiday { background:#fef3c7; color:#b45309; }
-    .badge-jieqi { background:#d1fae5; color:#059669; }
-    .row-label { font-size:13px; color:#666; margin-top:8px; }
+
+    .day-cell .day-num {
+      line-height: 1;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .day-cell .lunar-row {
+      font-size: 8px;
+      color: #94a3b8;
+      line-height: 1.1;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .day-cell .weather-row {
+      font-size: 7px;
+      line-height: 1.1;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .day-cell .weather-row.w-sun { color: #d97706; }
+    .day-cell .weather-row.w-cloud { color: #64748b; }
+    .day-cell .weather-row.w-rain { color: #3b82f6; }
+    .day-cell .weather-row.w-snow { color: #0ea5e9; }
+
+    .day-cell .fest-icon {
+      position: absolute;
+      top: 2px;
+      right: 3px;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .day-cell.festival {
+      background: linear-gradient(135deg, #fff7ed, #fef3c7);
+      border-color: #f59e0b;
+    }
+
+    .day-cell.festival .lunar-row {
+      color: #b45309;
+      font-weight: 600;
+    }
+
+    .day-cell.today {
+      border-color: #2563eb;
+      background: linear-gradient(145deg, #dbeafe, #eff6ff);
+      box-shadow:
+        0 10px 20px rgba(37, 99, 235, 0.35),
+        0 4px 8px rgba(37, 99, 235, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .day-cell.today .day-num {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .day-cell.has-memo::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      background: #64748b;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      box-shadow: 0 0 0 2px #fff;
+    }
+
+    .day-cell.has-important::after {
+      background: #ef4444;
+      width: 13px;
+      height: 13px;
+      bottom: 4px;
+      right: 4px;
+      box-shadow: 0 0 0 2px #fff, 0 0 6px #ef4444;
+    }
+
+    .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 99; }
+    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; padding: 16px; position: relative; }
+    .modal-box.fest-bg { background-size: cover; background-position: center; }
+    .modal-box.fest-bg::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.92); border-radius: 12px; }
+    .modal-box.fest-bg > * { position: relative; }
+    .modal-title { font-size: 18px; margin-bottom: 12px; }
+    textarea, input[type=text], select { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 16px; margin: 8px 0; background: #fff; }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
+    .tip-text { font-size: 13px; color: #555; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 8px; vertical-align: middle; }
+    .badge-important { background: #fee2e2; color: #dc2626; }
+    .badge-normal { background: #e2e8f0; color: #475569; }
+    .badge-holiday { background: #fef3c7; color: #b45309; }
+    .badge-jieqi { background: #d1fae5; color: #059669; }
+    .row-label { font-size: 13px; color: #666; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -121,7 +217,7 @@ const STORAGE_KEY = "memo_calendar_config";
 let editingId = null, viewingId = null, isSyncing = false, isUploading = false;
 let weatherCache = {};
 
-//触摸滑动变量
+//触摸滑动切换月份
 let touchStartX = 0;
 let touchEndX = 0;
 const calendarWrapDom = document.getElementById("calendarWrap");
@@ -138,6 +234,44 @@ calendarWrapDom.addEventListener('touchend', function(e){
         nextMonth();
     }
 }, {passive:true});
+
+// 双指缩放日历
+let initialPinchDistance = 0;
+let currentScale = 1;
+const MIN_SCALE = 1;
+const MAX_SCALE = 1.4;
+const dayRowDom = document.getElementById("calendarBody");
+
+function getDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.hypot(dx, dy);
+}
+
+calendarWrapDom.addEventListener("touchstart", function (e) {
+  if (e.touches.length === 2) {
+    initialPinchDistance = getDistance(e.touches);
+  }
+}, { passive: true });
+
+calendarWrapDom.addEventListener("touchmove", function (e) {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const currentDistance = getDistance(e.touches);
+    const scale = currentDistance / initialPinchDistance;
+    let newScale = currentScale * scale;
+    newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+    dayRowDom.style.transform = `scale(${newScale})`;
+    currentScale = newScale;
+  }
+}, { passive: false });
+
+calendarWrapDom.addEventListener("touchend", function (e) {
+  if (e.touches.length < 2) {
+    currentScale = Math.round(currentScale * 10) / 10;
+    dayRowDom.style.transform = `scale(${currentScale})`;
+  }
+}, { passive: true });
 
 const FESTIVAL_ICON = {
   "春节": "🏮", "元宵节": "🏮", "清明节": "🌿", "端午节": "🐉",
