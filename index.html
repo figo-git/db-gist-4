@@ -17,7 +17,7 @@
     .btn { padding: 8px 14px; border: none; border-radius: 8px; background: #3b82f6; color: #fff; cursor: pointer; font-size: 14px; }
     .btn:hover { background: #2563eb; }
     .btn-secondary { background: #6b7280; }
-    .calendar-wrap { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 2px 8px #00000012; }
+    .calendar-wrap { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 2px 8px #00000012; touch-action: pan-y; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
     .week-name { text-align: center; font-size: 13px; color: #666; padding: 4px; }
@@ -52,11 +52,6 @@
     .badge-holiday { background:#fef3c7; color:#b45309; }
     .badge-jieqi { background:#d1fae5; color:#059669; }
     .row-label { font-size:13px; color:#666; margin-top:8px; }
-    .legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:#666; }
-    .legend span::before { content:"●"; margin-right:4px; }
-    .legend .lg-holiday::before { color:#b45309; }
-    .legend .lg-jieqi::before { color:#059669; }
-    .legend .lg-weather::before { color:#3b82f6; }
   </style>
 </head>
 <body>
@@ -66,7 +61,7 @@
     <button class="btn" onclick="pullPushSync()">立即同步</button>
   </div>
   <div class="tip-text" id="syncStatus">同步：未加载</div>
-  <div class="calendar-wrap">
+  <div class="calendar-wrap" id="calendarWrap">
     <div class="calendar-header">
       <button class="btn" onclick="prevMonth()">&lt;</button>
       <h2 id="monthTitle">2026-09</h2>
@@ -76,11 +71,6 @@
       <div class="week-name">日</div><div class="week-name">一</div><div class="week-name">二</div><div class="week-name">三</div><div class="week-name">四</div><div class="week-name">五</div><div class="week-name">六</div>
     </div>
     <div id="calendarBody" class="day-row"></div>
-    <div class="legend">
-      <span class="lg-holiday">节日</span>
-      <span class="lg-jieqi">二十四节气</span>
-      <span class="lg-weather">天气</span>
-    </div>
   </div>
 </div>
 <div class="modal-mask" id="memoModal">
@@ -130,6 +120,25 @@ let config = { token: "", gistId: "" };
 const STORAGE_KEY = "memo_calendar_config";
 let editingId = null, viewingId = null, isSyncing = false, isUploading = false;
 let weatherCache = {};
+
+//触摸滑动变量
+let touchStartX = 0;
+let touchEndX = 0;
+const calendarWrapDom = document.getElementById("calendarWrap");
+calendarWrapDom.addEventListener('touchstart', function(e){
+    touchStartX = e.changedTouches[0].screenX;
+}, {passive:true});
+calendarWrapDom.addEventListener('touchend', function(e){
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    //滑动阈值大于50像素才触发切换
+    if(diff > 50){
+        prevMonth();
+    }else if(diff < -50){
+        nextMonth();
+    }
+}, {passive:true});
+
 const FESTIVAL_ICON = {
   "春节": "🏮", "元宵节": "🏮", "清明节": "🌿", "端午节": "🐉",
   "七夕": "💗", "中元节": "🏮", "中秋节": "🌕", "重阳节": "🍂",
