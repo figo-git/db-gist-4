@@ -25,6 +25,9 @@
     .day-cell { aspect-ratio: 1/1; border-radius: 8px; padding: 4px; font-size: 14px; cursor: pointer; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; transition: transform .1s; }
     .day-cell:active { transform: scale(0.96); }
     .day-cell .day-num { line-height: 1; font-weight: 500; }
+    .day-cell.off-day .day-num { color: #dc2626; }
+    .day-cell.work-day .day-num { color: #2563eb; }
+    .day-cell .work-tag { position: absolute; top: 2px; left: 3px; font-size: 9px; background: #2563eb; color: #fff; border-radius: 3px; padding: 0 3px; line-height: 1.3; }
     .day-cell .lunar-text { font-size: 10px; color: #94a3b8; line-height: 1.1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .day-cell .weather-text { font-size: 10px; line-height: 1.1; text-align: center; white-space: nowrap; overflow: hidden; }
     .day-cell .weather-text.w-sun { color: #d97706; }
@@ -80,6 +83,8 @@
       <span class="lg-holiday">节日</span>
       <span class="lg-jieqi">二十四节气</span>
       <span class="lg-weather">天气</span>
+      <span style="color:#dc2626;">● 休息日</span>
+      <span style="color:#2563eb;">班=调休上班</span>
     </div>
   </div>
 </div>
@@ -171,10 +176,32 @@ const LUNAR_HOLIDAYS = {
   "12-23": "小年", "12-30": "除夕"
 };
 
+// 2026 年法定放假日期（休息日）
+const LEGAL_OFF_2026 = new Set([
+  "2026-01-01","2026-01-02","2026-01-03",
+  "2026-02-15","2026-02-16","2026-02-17","2026-02-18","2026-02-19",
+  "2026-02-20","2026-02-21","2026-02-22","2026-02-23",
+  "2026-04-04","2026-04-05","2026-04-06",
+  "2026-05-01","2026-05-02","2026-05-03","2026-05-04","2026-05-05",
+  "2026-06-19","2026-06-20","2026-06-21",
+  "2026-09-25","2026-09-26","2026-09-27",
+  "2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07"
+]);
+// 2026 年调休上班日（周末但要上班）
+const LEGAL_WORK_2026 = new Set([
+  "2026-01-04","2026-02-14","2026-02-28","2026-05-09","2026-09-20","2026-10-10"
+]);
+
 function getDayInfo(y, m, d) {
-  const info = { lunar: "", holiday: null, jieqi: null, isToday: false };
+  const info = { lunar: "", holiday: null, jieqi: null, isToday: false, offDay: false, workOnWeekend: false };
   const today = new Date();
   if (y === today.getFullYear() && m === today.getMonth() + 1 && d === today.getDate()) info.isToday = true;
+  const dateStr = `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  const weekday = new Date(y, m - 1, d).getDay();
+  const isWeekend = (weekday === 0 || weekday === 6);
+  if (LEGAL_OFF_2026.has(dateStr)) info.offDay = true;
+  else if (LEGAL_WORK_2026.has(dateStr)) { info.offDay = false; info.workOnWeekend = true; }
+  else info.offDay = isWeekend;
   try {
     const solar = Solar.fromYmd(y, m, d);
     const lunar = solar.getLunar();
@@ -210,11 +237,33 @@ function weatherCodeToIcon(code) {
   return { icon: "🌡️", text: "", cls: "w-cloud" };
 }
 
-async function loadWeatherForMonth(y, m) {
+let weatherCache = {}; // dateStr -> {icon, text, cls}
+const WEATHER_CACHE_KEY = "memo_weather_cache";
+
+function loadWeatherCache() {
   try {
-    const start = `${y}-${String(m + 1).padStart(2,"0")}-01`;
-    const endDate = new Date(y, m + 1, 0);
-    const end = `${y}-${String(m + 1).padStart(2,"0")}-${String(endDate.getDate()).padStart(2,"0")}`;
+    const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+    if (raw) weatherCache = JSON.parse(raw) || {};
+  } catch (e) { weatherCache = {}; }
+}
+function saveWeatherCache() {
+  try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(weatherCache)); } catch (e) {}
+}
+function monthCached(y, m) {
+  const prefix = `${y}-${String(m + 1).padStart(2,"0")}`;
+  return Object.keys(weatherCache).some(k => k.startsWith(prefix));
+}
+loadWeatherCache();
+
+async function loadWeatherForMonth(y, m) {
+  if (monthCached(y, m)) { renderCalendar(); return; }
+  // 一次请求当前月+前后月，减少切换等待
+  const startDate = new Date(y, m - 1, 1);
+  const endDate = new Date(y, m + 2, 0);
+  const start = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2,"0")}-01`;
+  const end = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2,"0")}-${String(endDate.getDate()).padStart(2,"0")}`;
+  setSyncStatus("天气加载中...");
+  try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&start_date=${start}&end_date=${end}`;
     const res = await fetch(url);
     const data = await res.json();
@@ -225,8 +274,10 @@ async function loadWeatherForMonth(y, m) {
         const tMin = Math.round(data.daily.temperature_2m_min[i]);
         weatherCache[dateStr] = { ...w, text: `${w.icon}${tMin}~${tMax}°` };
       });
+      saveWeatherCache();
     }
   } catch (e) { console.warn("天气加载失败", e); }
+  renderCalendar();
 }
 
 function applyUrlConfig() {
@@ -381,13 +432,16 @@ function renderCalendar() {
     if (info.isToday) cell.classList.add("today");
     const festIcon = info.holiday ? (FESTIVAL_ICON[info.holiday] || "🎉") : "";
     if (info.holiday) cell.classList.add("festival");
+    if (info.offDay) cell.classList.add("off-day");
+    if (info.workOnWeekend) cell.classList.add("work-day");
     let bottomHtml = "";
     if (weatherCache[dateStr]) {
       bottomHtml = `<span class="weather-text ${weatherCache[dateStr].cls}">${weatherCache[dateStr].text}</span>`;
     } else {
       bottomHtml = `<span class="lunar-text">${info.lunar}</span>`;
     }
-    cell.innerHTML = `<span class="day-num">${d}</span>${festIcon ? `<span class="fest-icon">${festIcon}</span>` : ""}${bottomHtml}`;
+    const workTag = info.workOnWeekend ? `<span class="work-tag">班</span>` : "";
+    cell.innerHTML = `<span class="day-num">${d}</span>${workTag}${festIcon ? `<span class="fest-icon">${festIcon}</span>` : ""}${bottomHtml}`;
     const dayMemos = state.memos.filter(item => item.date === dateStr);
     if (dayMemos.length > 0) {
       cell.classList.add("has-memo");
