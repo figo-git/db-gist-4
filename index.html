@@ -22,17 +22,26 @@
     .week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
     .week-name { text-align: center; font-size: 13px; color: #666; padding: 4px; }
     .day-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day-cell { aspect-ratio: 1/1; border-radius: 8px; padding: 4px; font-size: 14px; cursor: pointer; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+    .day-cell { aspect-ratio: 1/1; border-radius: 8px; padding: 4px; font-size: 14px; cursor: pointer; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; transition: transform .1s; }
+    .day-cell:active { transform: scale(0.96); }
     .day-cell .day-num { line-height: 1; font-weight: 500; }
     .day-cell .lunar-text { font-size: 10px; color: #94a3b8; line-height: 1.1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .day-cell .lunar-text.holiday { color: #dc2626; font-weight: 600; }
-    .day-cell .lunar-text.jieqi { color: #059669; font-weight: 600; }
-    .day-cell .lunar-text.today-lunar { color: #3b82f6; }
+    .day-cell .weather-text { font-size: 10px; line-height: 1.1; text-align: center; white-space: nowrap; overflow: hidden; }
+    .day-cell .weather-text.w-sun { color: #d97706; }
+    .day-cell .weather-text.w-cloud { color: #64748b; }
+    .day-cell .weather-text.w-rain { color: #3b82f6; }
+    .day-cell .weather-text.w-snow { color: #0ea5e9; }
+    .day-cell .fest-icon { position: absolute; top: 2px; right: 3px; font-size: 14px; line-height: 1; }
+    .day-cell.festival { background: linear-gradient(135deg, #fff7ed, #fef3c7); border-color: #f59e0b; }
+    .day-cell.festival .lunar-text { color: #b45309; font-weight: 600; }
     .day-cell.today { border-color: #3b82f6; background: #eff6ff; }
     .day-cell.has-memo::after { content: ""; width: 7px; height: 7px; background: #94a3b8; border-radius: 50%; position: absolute; bottom: 5px; right: 5px; }
     .day-cell.has-important::after { background: #ef4444; width: 9px; height: 9px; bottom: 4px; right: 4px; box-shadow: 0 0 0 2px #fff; }
     .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 99; }
-    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; padding: 16px; }
+    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; padding: 16px; position: relative; }
+    .modal-box.fest-bg { background-size: cover; background-position: center; }
+    .modal-box.fest-bg::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.92); border-radius: 12px; }
+    .modal-box.fest-bg > * { position: relative; }
     .modal-title { font-size: 18px; margin-bottom: 12px; }
     textarea, input[type=text], select { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 16px; margin: 8px 0; background: #fff; }
     .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
@@ -40,14 +49,14 @@
     .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 8px; vertical-align: middle; }
     .badge-important { background: #fee2e2; color: #dc2626; }
     .badge-normal { background: #e2e8f0; color: #475569; }
-    .badge-holiday { background: #fee2e2; color: #dc2626; }
+    .badge-holiday { background: #fef3c7; color: #b45309; }
     .badge-jieqi { background: #d1fae5; color: #059669; }
     .row-label { font-size: 13px; color: #666; margin-top: 8px; }
     .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: #666; }
     .legend span::before { content: "●"; margin-right: 4px; }
-    .legend .lg-holiday::before { color: #dc2626; }
+    .legend .lg-holiday::before { color: #b45309; }
     .legend .lg-jieqi::before { color: #059669; }
-    .legend .lg-lunar::before { color: #94a3b8; }
+    .legend .lg-weather::before { color: #3b82f6; }
   </style>
 </head>
 <body>
@@ -64,26 +73,19 @@
       <button class="btn" onclick="nextMonth()">&gt;</button>
     </div>
     <div class="week-row">
-      <div class="week-name">日</div>
-      <div class="week-name">一</div>
-      <div class="week-name">二</div>
-      <div class="week-name">三</div>
-      <div class="week-name">四</div>
-      <div class="week-name">五</div>
-      <div class="week-name">六</div>
+      <div class="week-name">日</div><div class="week-name">一</div><div class="week-name">二</div><div class="week-name">三</div><div class="week-name">四</div><div class="week-name">五</div><div class="week-name">六</div>
     </div>
     <div id="calendarBody" class="day-row"></div>
     <div class="legend">
-      <span class="lg-holiday">节假日</span>
+      <span class="lg-holiday">节日</span>
       <span class="lg-jieqi">二十四节气</span>
-      <span class="lg-lunar">农历</span>
+      <span class="lg-weather">天气</span>
     </div>
   </div>
 </div>
 
-<!-- 备忘编辑弹窗 -->
 <div class="modal-mask" id="memoModal">
-  <div class="modal-box">
+  <div class="modal-box" id="memoModalBox">
     <div class="modal-title" id="memoModalTitle">新增备忘</div>
     <div class="row-label">日期</div>
     <input type="text" id="memoDate" placeholder="YYYY-MM-DD">
@@ -106,9 +108,8 @@
   </div>
 </div>
 
-<!-- 备忘查看弹窗 -->
 <div class="modal-mask" id="viewModal">
-  <div class="modal-box">
+  <div class="modal-box" id="viewModalBox">
     <div class="modal-title" id="viewTitle">备忘详情</div>
     <div id="viewDateInfo" style="font-size:13px;color:#666;margin-bottom:8px;"></div>
     <div id="viewContent" style="line-height:1.7;"></div>
@@ -124,18 +125,45 @@
 const imgRepoOwner = "figo-git";
 const imgRepoName = "img-storage";
 const imgBranch = "main";
+// 默认天气位置：香港（可改为你所在城市经纬度）
+const WEATHER_LAT = 31.2304;
+const WEATHER_LON = 121.4737;
 
 let state = { memos: [], currentYear: new Date().getFullYear(), currentMonth: new Date().getMonth() };
 let config = { token: "", gistId: "" };
 const STORAGE_KEY = "memo_calendar_config";
 let editingId = null, viewingId = null, isSyncing = false, isUploading = false;
+let weatherCache = {}; // dateStr -> {icon, text, cls}
 
-// 法定节假日（公历固定 + 农历传统节日简化，实际节假日调休以国务院公告为准）
+// 节日图标映射（emoji 作为图案）
+const FESTIVAL_ICON = {
+  "春节": "🏮", "元宵节": "🏮", "清明节": "🌿", "端午节": "🐉",
+  "七夕": "💗", "中元节": "🏮", "中秋节": "🌕", "重阳节": "🍂",
+  "腊八节": "🥣", "小年": "🏮", "除夕": "🧧",
+  "元旦": "🎊", "情人节": "💝", "妇女节": "🌸", "植树节": "🌳",
+  "劳动节": "🛠️", "青年节": "🌟", "儿童节": "🎈", "建党节": "🚩",
+  "建军节": "🎖️", "教师节": "📚", "国庆节": "🇨🇳", "圣诞节": "🎄"
+};
+// 节日弹窗背景（CSS 渐变）
+const FESTIVAL_BG = {
+  "春节": "linear-gradient(135deg,#fee2e2,#fca5a5)",
+  "元宵节": "linear-gradient(135deg,#fef3c7,#fde68a)",
+  "清明节": "linear-gradient(135deg,#d1fae5,#a7f3d0)",
+  "端午节": "linear-gradient(135deg,#dbeafe,#93c5fd)",
+  "七夕": "linear-gradient(135deg,#fce7f3,#f9a8d4)",
+  "中秋节": "linear-gradient(135deg,#e0e7ff,#a5b4fc)",
+  "重阳节": "linear-gradient(135deg,#fed7aa,#fdba74)",
+  "除夕": "linear-gradient(135deg,#fee2e2,#f87171)",
+  "元旦": "linear-gradient(135deg,#e0e7ff,#c7d2fe)",
+  "劳动节": "linear-gradient(135deg,#d1fae5,#6ee7b7)",
+  "国庆节": "linear-gradient(135deg,#fee2e2,#fca5a5)",
+  "圣诞节": "linear-gradient(135deg,#d1fae5,#86efac)"
+};
+
 const SOLAR_HOLIDAYS = {
   "01-01": "元旦", "02-14": "情人节", "03-08": "妇女节", "03-12": "植树节",
-  "04-01": "愚人节", "05-01": "劳动节", "05-04": "青年节", "06-01": "儿童节",
-  "07-01": "建党节", "08-01": "建军节", "09-10": "教师节", "10-01": "国庆节",
-  "12-25": "圣诞节"
+  "05-01": "劳动节", "05-04": "青年节", "06-01": "儿童节",
+  "07-01": "建党节", "08-01": "建军节", "09-10": "教师节", "10-01": "国庆节", "12-25": "圣诞节"
 };
 const LUNAR_HOLIDAYS = {
   "1-1": "春节", "1-15": "元宵节", "5-5": "端午节", "7-7": "七夕",
@@ -146,18 +174,13 @@ const LUNAR_HOLIDAYS = {
 function getDayInfo(y, m, d) {
   const info = { lunar: "", holiday: null, jieqi: null, isToday: false };
   const today = new Date();
-  if (y === today.getFullYear() && m === today.getMonth() + 1 && d === today.getDate()) {
-    info.isToday = true;
-  }
+  if (y === today.getFullYear() && m === today.getMonth() + 1 && d === today.getDate()) info.isToday = true;
   try {
     const solar = Solar.fromYmd(y, m, d);
     const lunar = solar.getLunar();
-    // 节气
     const jq = lunar.getJieQi();
     if (jq) info.jieqi = jq;
-    // 农历节日优先
-    const lm = lunar.getMonth();
-    const ld = lunar.getDay();
+    const lm = lunar.getMonth(), ld = lunar.getDay();
     const lunarKey = `${lm}-${ld}`;
     if (LUNAR_HOLIDAYS[lunarKey]) {
       info.holiday = LUNAR_HOLIDAYS[lunarKey];
@@ -168,16 +191,41 @@ function getDayInfo(y, m, d) {
     } else if (info.jieqi) {
       info.lunar = info.jieqi;
     } else {
-      info.lunar = lunar.getDayInChinese();
-      // 初一显示月份
-      if (ld === 1) {
-        info.lunar = lunar.getMonthInChinese() + "月";
-      }
+      info.lunar = ld === 1 ? lunar.getMonthInChinese() + "月" : lunar.getDayInChinese();
     }
-  } catch (e) {
-    info.lunar = "";
-  }
+  } catch (e) { info.lunar = ""; }
   return info;
+}
+
+// 天气代码映射（Open-Meteo weathercode）
+function weatherCodeToIcon(code) {
+  if (code === 0) return { icon: "☀️", text: "晴", cls: "w-sun" };
+  if (code <= 2) return { icon: "⛅", text: "多云", cls: "w-cloud" };
+  if (code === 3) return { icon: "☁️", text: "阴", cls: "w-cloud" };
+  if (code <= 48) return { icon: "🌫️", text: "雾", cls: "w-cloud" };
+  if (code <= 67) return { icon: "🌧️", text: "雨", cls: "w-rain" };
+  if (code <= 77) return { icon: "🌨️", text: "雪", cls: "w-snow" };
+  if (code <= 82) return { icon: "🌦️", text: "阵雨", cls: "w-rain" };
+  if (code <= 86) return { icon: "🌨️", text: "阵雪", cls: "w-snow" };
+  return { icon: "🌡️", text: "", cls: "w-cloud" };
+}
+
+async function loadWeatherForMonth(y, m) {
+  try {
+    const start = `${y}-${String(m + 1).padStart(2,"0")}-01`;
+    const endDate = new Date(y, m + 1, 0);
+    const end = `${y}-${String(m + 1).padStart(2,"0")}-${String(endDate.getDate()).padStart(2,"0")}`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&daily=weathercode,temperature_2m_max&timezone=auto&start_date=${start}&end_date=${end}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.daily && data.daily.time) {
+      data.daily.time.forEach((dateStr, i) => {
+        const w = weatherCodeToIcon(data.daily.weathercode[i]);
+        const tMax = data.daily.temperature_2m_max[i];
+        weatherCache[dateStr] = { ...w, text: `${w.icon}${Math.round(tMax)}°` };
+      });
+    }
+  } catch (e) { console.warn("天气加载失败", e); }
 }
 
 function applyUrlConfig() {
@@ -207,8 +255,7 @@ async function compressImage(file, maxWidth = 1200, quality = 0.7) {
         let w = img.width, h = img.height;
         if (w > maxWidth) { h = h * (maxWidth / w); w = maxWidth; }
         canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, w, h);
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
         canvas.toBlob(blob => resolve(blob), "image/jpeg", quality);
       };
       img.src = e.target.result;
@@ -253,8 +300,7 @@ document.getElementById("imgUploadInput").addEventListener("change", async funct
 function renderMemoContent(text) {
   let html = (text || "").replace(/!\[图片\]\((.+?)\)/g,
     `<img src="$1" style="max-width:100%;border-radius:6px;margin:4px 0;" onclick="window.open('$1')">`);
-  html = html.replace(/\n/g, "<br>");
-  return html;
+  return html.replace(/\n/g, "<br>");
 }
 
 function loadLocalConfig() {
@@ -266,14 +312,12 @@ function saveLocalConfig() {
 }
 
 async function pullGist() {
-  if (!config.token || !config.gistId) { setSyncStatus("请通过配置链接打开（含 token 和 gistid）"); return; }
+  if (!config.token || !config.gistId) { setSyncStatus("请通过配置链接打开"); return; }
   if (isSyncing) return;
   isSyncing = true;
   setSyncStatus("拉取云端数据...");
   try {
-    const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
-      headers: { "Authorization": `token ${config.token}` }
-    });
+    const res = await fetch(`https://api.github.com/gists/${config.gistId}`, { headers: { "Authorization": `token ${config.token}` } });
     const gist = await res.json();
     if (!res.ok) throw new Error(gist.message);
     const file = gist.files["memos.json"];
@@ -305,7 +349,7 @@ async function pushGist() {
     const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
       method: "PATCH",
       headers: { "Authorization": `token ${config.token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ description: "Memo Calendar Data", files: { "memos.json": { content: JSON.stringify({ memos: state.memos }, null, 2) } } })
+      body: JSON.stringify({ description: "Memo Calendar", files: { "memos.json": { content: JSON.stringify({ memos: state.memos }, null, 2) } } })
     });
     const ret = await res.json();
     if (!res.ok) throw new Error(ret.message);
@@ -334,10 +378,17 @@ function renderCalendar() {
     const dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const info = getDayInfo(y, m + 1, d);
     if (info.isToday) cell.classList.add("today");
-    let lunarCls = "lunar-text";
-    if (info.holiday) lunarCls += " holiday";
-    else if (info.jieqi) lunarCls += " jieqi";
-    cell.innerHTML = `<span class="day-num">${d}</span><span class="${lunarCls}">${info.lunar}</span>`;
+    const festIcon = info.holiday ? (FESTIVAL_ICON[info.holiday] || "🎉") : "";
+    if (info.holiday) cell.classList.add("festival");
+    let bottomHtml = "";
+    if (info.holiday || info.jieqi) {
+      bottomHtml = `<span class="lunar-text">${info.lunar}</span>`;
+    } else if (weatherCache[dateStr]) {
+      bottomHtml = `<span class="weather-text ${weatherCache[dateStr].cls}">${weatherCache[dateStr].text}</span>`;
+    } else {
+      bottomHtml = `<span class="lunar-text">${info.lunar}</span>`;
+    }
+    cell.innerHTML = `<span class="day-num">${d}</span>${festIcon ? `<span class="fest-icon">${festIcon}</span>` : ""}${bottomHtml}`;
     const dayMemos = state.memos.filter(item => item.date === dateStr);
     if (dayMemos.length > 0) {
       cell.classList.add("has-memo");
@@ -351,8 +402,21 @@ function renderCalendar() {
     wrap.appendChild(cell);
   }
 }
-function prevMonth() { state.currentMonth--; if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; } renderCalendar(); }
-function nextMonth() { state.currentMonth++; if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; } renderCalendar(); }
+
+function prevMonth() { state.currentMonth--; if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; } renderCalendar(); loadWeatherForMonth(state.currentYear, state.currentMonth); }
+function nextMonth() { state.currentMonth++; if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; } renderCalendar(); loadWeatherForMonth(state.currentYear, state.currentMonth); }
+
+// 首次加载天气
+loadWeatherForMonth(state.currentYear, state.currentMonth);
+
+function applyFestBg(modalBox, holiday) {
+  modalBox.classList.remove("fest-bg");
+  modalBox.style.background = "";
+  if (holiday && FESTIVAL_BG[holiday]) {
+    modalBox.classList.add("fest-bg");
+    modalBox.style.background = FESTIVAL_BG[holiday];
+  }
+}
 
 function openMemoModal(dateStr) {
   editingId = null;
@@ -361,6 +425,10 @@ function openMemoModal(dateStr) {
   document.getElementById("memoPriority").value = "normal";
   document.getElementById("memoContent").value = "";
   document.getElementById("uploadTip").textContent = "";
+  // 节日背景
+  const [y, m, d] = (dateStr || "").split("-").map(Number);
+  const info = y ? getDayInfo(y, m, d) : { holiday: null };
+  applyFestBg(document.getElementById("memoModalBox"), info.holiday);
   document.getElementById("memoModal").style.display = "flex";
 }
 function closeMemoModal() { document.getElementById("memoModal").style.display = "none"; }
@@ -384,15 +452,15 @@ function openViewModal(id) {
   viewingId = id;
   const badge = item.priority === "important" ? `<span class="badge badge-important">重要</span>` : `<span class="badge badge-normal">普通</span>`;
   document.getElementById("viewTitle").innerHTML = `备忘 · ${item.date} ${badge}`;
-  // 日期信息
   const [y, m, d] = item.date.split("-").map(Number);
   const info = getDayInfo(y, m, d);
   let dateInfo = "";
-  if (info.holiday) dateInfo += `<span class="badge badge-holiday">${info.holiday}</span>`;
+  if (info.holiday) dateInfo += `<span class="badge badge-holiday">${info.holiday} ${FESTIVAL_ICON[info.holiday] || ""}</span>`;
   if (info.jieqi) dateInfo += `<span class="badge badge-jieqi">${info.jieqi}</span>`;
-  if (info.lunar && !info.holiday) dateInfo += `<span class="badge badge-normal">农历${info.lunar}</span>`;
+  if (weatherCache[item.date]) dateInfo += `<span class="badge badge-normal">${weatherCache[item.date].text}</span>`;
   document.getElementById("viewDateInfo").innerHTML = dateInfo;
   document.getElementById("viewContent").innerHTML = renderMemoContent(item.content);
+  applyFestBg(document.getElementById("viewModalBox"), info.holiday);
   document.getElementById("viewModal").style.display = "flex";
 }
 function closeViewModal() { document.getElementById("viewModal").style.display = "none"; viewingId = null; }
