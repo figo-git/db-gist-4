@@ -17,7 +17,6 @@
     .btn { padding: 8px 14px; border: none; border-radius: 8px; background: #3b82f6; color: #fff; cursor: pointer; font-size: 14px; }
     .btn:hover { background: #2563eb; }
     .btn-secondary { background: #6b7280; }
-
     .calendar-wrap {
       background: #fff;
       border-radius: 12px;
@@ -26,16 +25,13 @@
       overflow: hidden;
       position: relative;
     }
-
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
     .week-name { text-align: center; font-size: 13px; color: #666; padding: 4px; }
-
     .calendar-viewport {
       overflow: hidden;
       position: relative;
     }
-
     .day-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -44,7 +40,6 @@
       transform-origin: top center;
       will-change: transform;
     }
-
     .day-cell {
       aspect-ratio: 1/1;
       border-radius: 8px;
@@ -59,15 +54,12 @@
       overflow: hidden;
       transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
     }
-
     .day-cell:active { transform: scale(0.96); }
-
     .day-cell .day-num {
       line-height: 1;
       font-weight: 500;
       font-size: 15px;
     }
-
     .day-cell .fest-jieqi-row {
       flex: 1;
       display: flex;
@@ -81,7 +73,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .day-cell .lunar-row {
       font-size: 9px;
       color: #94a3b8;
@@ -92,7 +83,6 @@
       text-overflow: ellipsis;
       margin-top: auto;
     }
-
     .day-cell .fest-icon {
       position: absolute;
       top: 2px;
@@ -100,25 +90,20 @@
       font-size: 12px;
       line-height: 1;
     }
-
     .day-cell.festival {
       background: linear-gradient(135deg, #fff7ed, #fef3c7);
       border-color: #f59e0b;
     }
-
     .day-cell.festival .fest-jieqi-row {
       color: #9a3412;
     }
-
     .day-cell.jieqi {
       background: linear-gradient(135deg, #ecfccb, #d9f99d);
       border-color: #84cc16;
     }
-
     .day-cell.jieqi .fest-jieqi-row {
       color: #3f6212;
     }
-
     .day-cell.today {
       border-color: #2563eb;
       background: linear-gradient(145deg, #dbeafe, #eff6ff);
@@ -128,12 +113,10 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
       transform: translateY(-1px);
     }
-
     .day-cell.today .day-num {
       color: #1d4ed8;
       font-weight: 700;
     }
-
     .day-cell.has-memo::after {
       content: "";
       width: 10px;
@@ -145,7 +128,6 @@
       right: 5px;
       box-shadow: 0 0 0 2px #fff;
     }
-
     .day-cell.has-important::after {
       background: #ef4444;
       width: 13px;
@@ -154,9 +136,28 @@
       right: 4px;
       box-shadow: 0 0 0 2px #fff, 0 0 6px #ef4444;
     }
-
     .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 99; }
-    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; padding: 16px; position: relative; }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 16px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .modal-box::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:12px;
+      background:rgba(255,255,255,0.88);
+      z-index:-1;
+    }
     .modal-title { font-size: 18px; margin-bottom: 12px; }
     textarea, input[type=text], select { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 16px; margin: 8px 0; background: #fff; }
     .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
@@ -168,110 +169,6 @@
     .badge-jieqi { background: #d1fae5; color: #059669; }
     .badge-weather { background: #dbeafe; color: #1d4ed8; }
     .row-label { font-size: 13px; color: #666; margin-top: 8px; }
-
-    .spring-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #fbcfe8 0, transparent 40%),
-        radial-gradient(circle at 80% 30%, #fef3c7 0, transparent 40%),
-        radial-gradient(circle at 50% 80%, #bbf7d0 0, transparent 40%);
-    }
-
-    .summer-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #a5f3fc 0, transparent 40%),
-        radial-gradient(circle at 80% 30%, #bae6fd 0, transparent 40%),
-        radial-gradient(circle at 50% 80%, #bef264 0, transparent 40%);
-    }
-
-    .autumn-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #fed7aa 0, transparent 40%),
-        radial-gradient(circle at 80% 30%, #fde68a 0, transparent 40%),
-        radial-gradient(circle at 50% 80%, #fecaca 0, transparent 40%);
-    }
-
-    .winter-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #e0e7ff 0, transparent 40%),
-        radial-gradient(circle at 80% 30%, #cffafe 0, transparent 40%),
-        radial-gradient(circle at 50% 80%, #dbeafe 0, transparent 40%);
-    }
-
-    .lantern-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 15% 20%, #fecdd3 0, transparent 45%),
-        radial-gradient(circle at 85% 25%, #fde68a 0, transparent 45%),
-        radial-gradient(circle at 50% 90%, #fed7aa 0, transparent 45%);
-    }
-
-    .midautumn-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 25% 25%, #e0e7ff 0, transparent 45%),
-        radial-gradient(circle at 75% 30%, #c7d2fe 0, transparent 45%),
-        radial-gradient(circle at 50% 85%, #fef3c7 0, transparent 45%);
-    }
-
-    .dragon-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #bae6fd 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #a5f3fc 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #d9f99d 0, transparent 45%);
-    }
-
-    .qingming-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #bbf7d0 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #d9f99d 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #a7f3d0 0, transparent 45%);
-    }
-
-    .doublebg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #fed7aa 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #fecaca 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #fdba74 0, transparent 45%);
-    }
-
-    .christmas-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #d1fae5 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #a7f3d0 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #fca5a5 0, transparent 45%);
-    }
-
-    .newyear-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #fef3c7 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #fde68a 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #fed7aa 0, transparent 45%);
-    }
-
-    .national-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #fecaca 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #fca5a5 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #fed7aa 0, transparent 45%);
-    }
-
-    .start-bg {
-      background-image:
-        linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-        radial-gradient(circle at 20% 20%, #e0e7ff 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #c7d2fe 0, transparent 45%),
-        radial-gradient(circle at 50% 80%, #fef3c7 0, transparent 45%);
-    }
   </style>
 </head>
 <body>
@@ -343,11 +240,9 @@ let config = { token: "", gistId: "" };
 const STORAGE_KEY = "memo_calendar_config";
 let editingId = null, viewingId = null, isSyncing = false, isUploading = false;
 let weatherCache = {};
-
 const calendarWrapDom = document.getElementById("calendarWrap");
 const calendarBodyDom = document.getElementById("calendarBody");
 const viewportDom = document.getElementById("calendarViewport");
-
 // 手势状态：区分单指滑动月份切换与双指缩放
 let touchStartX = 0;
 let touchMovedX = 0;
@@ -359,7 +254,6 @@ const MIN_SCALE = 1;
 const MAX_SCALE = 1.4;
 const SWIPE_THRESHOLD = 60;
 const SWIPE_HORIZONTAL_RATIO = 1.2;
-
 calendarWrapDom.addEventListener("touchstart", function (e) {
   if (e.touches.length === 1) {
     touchStartX = e.touches[0].screenX;
@@ -371,7 +265,6 @@ calendarWrapDom.addEventListener("touchstart", function (e) {
     initialPinchDistance = getDistance(e.touches);
   }
 }, { passive: true });
-
 calendarWrapDom.addEventListener("touchmove", function (e) {
   if (e.touches.length === 2 && isPinching) {
     e.preventDefault();
@@ -383,11 +276,9 @@ calendarWrapDom.addEventListener("touchmove", function (e) {
     currentScale = newScale;
     return;
   }
-
   if (e.touches.length === 1 && !isPinching) {
     const dx = e.touches[0].screenX - touchStartX;
     const dy = e.touches[0].screenY - touchStartY;
-
     // 只有横向明显大于纵向时才作为月份切换手势，减少缩放误判
     if (Math.abs(dx) > Math.abs(dy) * SWIPE_HORIZONTAL_RATIO) {
       touchMovedX = dx;
@@ -396,7 +287,6 @@ calendarWrapDom.addEventListener("touchmove", function (e) {
     }
   }
 }, { passive: false });
-
 calendarWrapDom.addEventListener("touchend", function (e) {
   if (isPinching) {
     currentScale = Math.round(currentScale * 10) / 10;
@@ -404,7 +294,6 @@ calendarWrapDom.addEventListener("touchend", function (e) {
     isPinching = false;
     return;
   }
-
   if (e.touches.length === 0 && touchMovedX !== 0) {
     if (touchMovedX > SWIPE_THRESHOLD) {
       prevMonth(true);
@@ -416,18 +305,15 @@ calendarWrapDom.addEventListener("touchend", function (e) {
     touchMovedX = 0;
   }
 }, { passive: true });
-
 function getDistance(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
   const dy = touches[0].clientY - touches[1].clientY;
   return Math.hypot(dx, dy);
 }
-
 function resetCalendarPosition() {
   calendarBodyDom.style.transition = "transform 0.25s ease";
   calendarBodyDom.style.transform = `translateX(0) scale(${currentScale})`;
 }
-
 // 月份切换：带动画过程
 function prevMonth(withSwipe = false) {
   if (withSwipe) {
@@ -444,7 +330,6 @@ function prevMonth(withSwipe = false) {
     loadWeatherForWeek(state.currentYear, state.currentMonth);
   }, withSwipe ? 320 : 0);
 }
-
 function nextMonth(withSwipe = false) {
   if (withSwipe) {
     calendarBodyDom.style.transition = "transform 0.35s ease";
@@ -460,7 +345,6 @@ function nextMonth(withSwipe = false) {
     loadWeatherForWeek(state.currentYear, state.currentMonth);
   }, withSwipe ? 320 : 0);
 }
-
 const FESTIVAL_ICON = {
   "春节": "🏮", "元宵节": "🏮", "清明节": "🌿", "端午节": "🐉",
   "七夕": "💗", "中元节": "🏮", "中秋节": "🌕", "重阳节": "🍂",
@@ -469,45 +353,46 @@ const FESTIVAL_ICON = {
   "劳动节": "🛠️", "青年节": "🌟", "儿童节": "🎈", "建党节": "🚩",
   "建军节": "🎖️", "教师节": "📚", "国庆节": "🇨🇳", "圣诞节": "🎄"
 };
-
-const FESTIVAL_JIEQI_BG = {
-  "春节": "lantern-bg",
-  "元宵节": "lantern-bg",
-  "清明节": "qingming-bg",
-  "端午节": "dragon-bg",
-  "中秋节": "midautumn-bg",
-  "重阳节": "autumn-bg",
-  "除夕": "lantern-bg",
-  "元旦": "newyear-bg",
-  "劳动节": "spring-bg",
-  "国庆节": "national-bg",
-  "圣诞节": "christmas-bg",
-  "立春": "spring-bg",
-  "雨水": "spring-bg",
-  "惊蛰": "spring-bg",
-  "春分": "spring-bg",
-  "清明": "qingming-bg",
-  "谷雨": "spring-bg",
-  "立夏": "summer-bg",
-  "小满": "summer-bg",
-  "芒种": "summer-bg",
-  "夏至": "summer-bg",
-  "小暑": "summer-bg",
-  "大暑": "summer-bg",
-  "立秋": "autumn-bg",
-  "处暑": "autumn-bg",
-  "白露": "autumn-bg",
-  "秋分": "autumn-bg",
-  "寒露": "autumn-bg",
-  "霜降": "autumn-bg",
-  "立冬": "winter-bg",
-  "小雪": "winter-bg",
-  "大雪": "winter-bg",
-  "冬至": "winter-bg",
-  "小寒": "winter-bg",
-  "大寒": "winter-bg"
+/**
+ * 节日/节气弹窗真实网络背景图片地址
+ * 采用unsplash公开可访问图片，modal-box设置半透明白色遮罩保证文字可读
+ */
+const FESTIVAL_JIEQI_BG_IMAGE = {
+  "春节":"https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1000&auto=format&fit=crop",
+  "元宵节":"https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1000&auto=format&fit=crop",
+  "清明节":"https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1000&auto=format&fit=crop",
+  "端午节":"https://images.unsplash.com/photo-1626133819439-78a8c412f434?q=80&w=1000&auto=format&fit=crop",
+  "中秋节":"https://images.unsplash.com/photo-1500212220834-17b0178d9639?q=80&w=1000&auto=format&fit=crop",
+  "重阳节":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "除夕":"https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1000&auto=format&fit=crop",
+  "元旦":"https://images.unsplash.com/photo-1467810563316-b5476525c0f9?q=80&w=1000&auto=format&fit=crop",
+  "劳动节":"https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1000&auto=format&fit=crop",
+  "国庆节":"https://images.unsplash.com/photo-1569517282132-25d22f4573e6?q=80&w=1000&auto=format&fit=crop",
+  "立春":"https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1000&auto=format&fit=crop",
+  "雨水":"https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=1000&auto=format&fit=crop",
+  "惊蛰":"https://images.unsplash.com/photo-1518495973542-4542c06a5843?q=80&w=1000&auto=format&fit=crop",
+  "春分":"https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1000&auto=format&fit=crop",
+  "清明":"https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1000&auto=format&fit=crop",
+  "谷雨":"https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=1000&auto=format&fit=crop",
+  "立夏":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "小满":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "芒种":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "夏至":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "小暑":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "大暑":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "立秋":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "处暑":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "白露":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "秋分":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "寒露":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "霜降":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+  "立冬":"https://images.unsplash.com/photo-1517783999520-f068d743154e?q=80&w=1000&auto=format&fit=crop",
+  "小雪":"https://images.unsplash.com/photo-1517783999520-f068d743154e?q=80&w=1000&auto=format&fit=crop",
+  "大雪":"https://images.unsplash.com/photo-1517783999520-f068d743154e?q=80&w=1000&auto=format&fit=crop",
+  "冬至":"https://images.unsplash.com/photo-1517783999520-f068d743154e?q=80&w=1000&auto=format&fit=crop",
+  "小寒":"https://images.unsplash.com/photo-1517783999520-f068d743154e?q=80&w=1000&auto=format&fit=crop",
+  "大寒":"https://images.unsplash.com/photo-1517783999520-f068d743154e?q=80&w=1000&auto=format&fit=crop"
 };
-
 const SOLAR_HOLIDAYS = {
   "01-01": "元旦", "02-14": "情人节", "03-08": "妇女节", "03-12": "植树节",
   "05-01": "劳动节", "05-04": "青年节", "06-01": "儿童节",
@@ -518,7 +403,6 @@ const LUNAR_HOLIDAYS = {
   "7-15": "中元节", "8-15": "中秋节", "9-9": "重阳节", "12-8": "腊八节",
   "12-23": "小年", "12-30": "除夕"
 };
-
 function getDayInfo(y, m, d) {
   const info = { lunar: "", holiday: null, jieqi: null, isToday: false };
   const today = new Date();
@@ -544,7 +428,6 @@ function getDayInfo(y, m, d) {
   } catch (e) { info.lunar = ""; }
   return info;
 }
-
 function weatherCodeToIcon(code) {
   if (code === 0) return { icon: "☀️", text: "晴", cls: "w-sun" };
   if (code <= 2) return { icon: "⛅", text: "多云", cls: "w-cloud" };
@@ -556,21 +439,17 @@ function weatherCodeToIcon(code) {
   if (code <= 86) return { icon: "🌨️", text: "阵雪", cls: "w-snow" };
   return { icon: "🌡️", text: "", cls: "w-cloud" };
 }
-
 // 只显示最近一周天气
 async function loadWeatherForWeek(y, m) {
   try {
     const today = new Date();
     const weekLater = new Date();
     weekLater.setDate(today.getDate() + 6);
-
     const start = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
     const end = `${weekLater.getFullYear()}-${String(weekLater.getMonth() + 1).padStart(2,"0")}-${String(weekLater.getDate()).padStart(2,"0")}`;
-
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&start_date=${start}&end_date=${end}`;
     const res = await fetch(url);
     const data = await res.json();
-
     if (data.daily && data.daily.time) {
       data.daily.time.forEach((dateStr, i) => {
         const w = weatherCodeToIcon(data.daily.weathercode[i]);
@@ -583,7 +462,16 @@ async function loadWeatherForWeek(y, m) {
     console.warn("天气加载失败", e);
   }
 }
-
+/**
+ * 设置弹窗背景图：优先取节日/节气对应网络图片，没有就清空为默认白色
+ */
+function applyModalBgImage(modalBox, holiday, jieqi){
+  modalBox.style.backgroundImage="";
+  let key = holiday || jieqi;
+  if(key && FESTIVAL_JIEQI_BG_IMAGE[key]){
+    modalBox.style.backgroundImage = `url(${FESTIVAL_JIEQI_BG_IMAGE[key]})`;
+  }
+}
 function applyUrlConfig() {
   const params = new URLSearchParams(window.location.search);
   const gistid = params.get("gistid");
@@ -595,18 +483,15 @@ function applyUrlConfig() {
     setSyncStatus("已从链接自动填入配置");
   }
 }
-
 function loadLocalConfig() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) { config = JSON.parse(raw); state.memos = config.memos || []; }
 }
-
 loadLocalConfig();
 applyUrlConfig();
 renderCalendar();
 pullGist();
 loadWeatherForWeek(state.currentYear, state.currentMonth);
-
 async function compressImage(file, maxWidth = 1200, quality = 0.7) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -625,7 +510,6 @@ async function compressImage(file, maxWidth = 1200, quality = 0.7) {
     reader.readAsDataURL(file);
   });
 }
-
 async function uploadImageToRepo(blob) {
   const filename = `img_${Date.now()}.jpg`;
   const filePath = `images/${filename}`;
@@ -642,7 +526,6 @@ async function uploadImageToRepo(blob) {
   if (!res.ok) { const err = await res.json(); throw new Error(err.message || "上传图片失败"); }
   return `https://cdn.jsdelivr.net/gh/${imgRepoOwner}/${imgRepoName}@${imgBranch}/${filePath}`;
 }
-
 document.getElementById("imgUploadInput").addEventListener("change", async function (e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -660,17 +543,14 @@ document.getElementById("imgUploadInput").addEventListener("change", async funct
     console.error(err);
   } finally { isUploading = false; e.target.value = ""; }
 });
-
 function renderMemoContent(text) {
   let html = (text || "").replace(/!\[图片\]\((.+?)\)/g,
     `<img src="$1" style="max-width:100%;border-radius:6px;margin:4px 0;" onclick="window.open('$1')">`);
   return html.replace(/\n/g, "<br>");
 }
-
 function saveLocalConfig() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...config, memos: state.memos }));
 }
-
 async function pullGist() {
   if (!config.token || !config.gistId) { setSyncStatus("请通过配置链接打开"); return; }
   if (isSyncing) return;
@@ -701,7 +581,6 @@ async function pullGist() {
     console.error(e);
   } finally { isSyncing = false; }
 }
-
 async function pushGist() {
   if (!config.token || !config.gistId) return false;
   setSyncStatus("推送数据到 Gist...");
@@ -722,20 +601,16 @@ async function pushGist() {
     return false;
   }
 }
-
 async function pullPushSync() { await pullGist(); await pushGist(); }
-
 function renderCalendar() {
   const y = state.currentYear, m = state.currentMonth;
   document.getElementById("monthTitle").innerText = `${y}-${String(m + 1).padStart(2, "0")}`;
   const firstDay = new Date(y, m, 1).getDay();
   const daysCount = new Date(y, m + 1, 0).getDate();
   const wrap = document.getElementById("calendarBody");
-
   // 先把位置复位，再重绘当月
   calendarBodyDom.style.transition = "none";
   calendarBodyDom.style.transform = `translateX(0) scale(${currentScale})`;
-
   wrap.innerHTML = "";
   for (let i = 0; i < firstDay; i++) { const d = document.createElement("div"); d.className = "day-cell"; wrap.appendChild(d); }
   for (let d = 1; d <= daysCount; d++) {
@@ -744,31 +619,34 @@ function renderCalendar() {
     const dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const info = getDayInfo(y, m + 1, d);
     if (info.isToday) cell.classList.add("today");
-
     const festIcon = info.holiday ? (FESTIVAL_ICON[info.holiday] || "🎉") : "";
     let festJieqiText = "";
-
+    let isFestOrJieqi = false;
     if (info.holiday) {
       cell.classList.add("festival");
       festJieqiText = info.holiday;
+      isFestOrJieqi = true;
     } else if (info.jieqi) {
       cell.classList.add("jieqi");
       festJieqiText = info.jieqi;
+      isFestOrJieqi = true;
     }
-
+    // =========需求1：节日/节气格子不渲染农历lunar-row；普通日期保留农历=========
+    let lunarHtml = "";
+    if(!isFestOrJieqi && info.lunar){
+      lunarHtml = `<span class="lunar-row">${info.lunar}</span>`;
+    }
     cell.innerHTML = `
 <span class="day-num">${d}</span>
 ${festIcon ? `<span class="fest-icon">${festIcon}</span>` : ""}
 <span class="fest-jieqi-row">${festJieqiText}</span>
-<span class="lunar-row">${info.lunar}</span>
+${lunarHtml}
 `;
-
     const dayMemos = state.memos.filter(item => item.date === dateStr);
     if (dayMemos.length > 0) {
       cell.classList.add("has-memo");
       if (dayMemos.some(x => x.priority === "important")) cell.classList.add("has-important");
     }
-
     cell.onclick = () => {
       if (dayMemos.length === 0) openMemoModal(dateStr);
       else if (dayMemos.length === 1) openViewModal(dayMemos[0].id);
@@ -777,22 +655,6 @@ ${festIcon ? `<span class="fest-icon">${festIcon}</span>` : ""}
     wrap.appendChild(cell);
   }
 }
-
-function applyFestJieqiBg(modalBox, holiday, jieqi) {
-  modalBox.classList.remove(
-    "spring-bg", "summer-bg", "autumn-bg", "winter-bg",
-    "lantern-bg", "midautumn-bg", "dragon-bg", "qingming-bg",
-    "doublebg", "christmas-bg", "newyear-bg", "national-bg", "start-bg"
-  );
-
-  const key = holiday || jieqi || "";
-  if (FESTIVAL_JIEQI_BG[key]) {
-    modalBox.classList.add(FESTIVAL_JIEQI_BG[key]);
-  } else {
-    modalBox.classList.add("start-bg");
-  }
-}
-
 function openMemoModal(dateStr) {
   editingId = null;
   document.getElementById("memoModalTitle").innerText = "新增备忘";
@@ -800,24 +662,19 @@ function openMemoModal(dateStr) {
   document.getElementById("memoPriority").value = "normal";
   document.getElementById("memoContent").value = "";
   document.getElementById("uploadTip").textContent = "";
-
   const [y, m, d] = (dateStr || "").split("-").map(Number);
   const info = y ? getDayInfo(y, m, d) : { holiday: null, jieqi: null };
   const weatherInfo = weatherCache[dateStr];
-
   const weatherBox = document.getElementById("memoWeatherInfo");
   if (weatherInfo) {
     weatherBox.innerHTML = `<span class="badge badge-weather">${weatherInfo.text}</span>`;
   } else {
     weatherBox.innerHTML = `<span style="color:#888;">今日天气暂未收录，仅显示最近一周天气</span>`;
   }
-
-  applyFestJieqiBg(document.getElementById("memoModalBox"), info.holiday, info.jieqi);
+  applyModalBgImage(document.getElementById("memoModalBox"), info.holiday, info.jieqi);
   document.getElementById("memoModal").style.display = "flex";
 }
-
 function closeMemoModal() { document.getElementById("memoModal").style.display = "none"; }
-
 function saveMemo() {
   const date = document.getElementById("memoDate").value.trim();
   const content = document.getElementById("memoContent").value;
@@ -831,7 +688,6 @@ function saveMemo() {
   }
   saveLocalConfig(); closeMemoModal(); renderCalendar();
 }
-
 function openViewModal(id) {
   const item = state.memos.find(x => x.id === id);
   if (!item) return;
@@ -846,12 +702,10 @@ function openViewModal(id) {
   if (weatherCache[item.date]) dateInfo += `<span class="badge badge-weather">${weatherCache[item.date].text}</span>`;
   document.getElementById("viewDateInfo").innerHTML = dateInfo;
   document.getElementById("viewContent").innerHTML = renderMemoContent(item.content);
-  applyFestJieqiBg(document.getElementById("viewModalBox"), info.holiday, info.jieqi);
+  applyModalBgImage(document.getElementById("viewModalBox"), info.holiday, info.jieqi);
   document.getElementById("viewModal").style.display = "flex";
 }
-
 function closeViewModal() { document.getElementById("viewModal").style.display = "none"; viewingId = null; }
-
 function editMemoFromView() {
   const item = state.memos.find(x => x.id === viewingId);
   if (!item) return;
@@ -862,7 +716,6 @@ function editMemoFromView() {
   document.getElementById("memoPriority").value = item.priority || "normal";
   document.getElementById("memoContent").value = item.content;
   document.getElementById("uploadTip").textContent = "";
-
   const [y, m, d] = item.date.split("-").map(Number);
   const info = getDayInfo(y, m, d);
   const weatherInfo = weatherCache[item.date];
@@ -872,18 +725,15 @@ function editMemoFromView() {
   } else {
     weatherBox.innerHTML = `<span style="color:#888;">今日天气暂未收录</span>`;
   }
-
-  applyFestJieqiBg(document.getElementById("memoModalBox"), info.holiday, info.jieqi);
+  applyModalBgImage(document.getElementById("memoModalBox"), info.holiday, info.jieqi);
   document.getElementById("memoModal").style.display = "flex";
 }
-
 function deleteMemo() {
   if (!viewingId) return;
   if (!confirm("确定删除这条备忘吗？")) return;
   state.memos = state.memos.filter(x => x.id !== viewingId);
   saveLocalConfig(); closeViewModal(); renderCalendar();
 }
-
 function setSyncStatus(text) { document.getElementById("syncStatus").innerText = text; }
 </script>
 </body>
