@@ -1,740 +1,564 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>备忘录日历</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .app-container {
-            width: 100%;
-            max-width: 1020px;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        }
-        .app-header {
-            background: linear-gradient(135deg, #4b78e8 0%, #805ad5 100%);
-            color: white;
-            padding: 24px;
-        }
-        .app-title {
-            text-align: center;
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.15);
-            border-radius: 10px;
-            padding: 10px 14px;
-        }
-        .status-text {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-        .status-error {background: #f56565;}
-        .status-success {background: #48bb78;}
-        .status-wait {background: #ecc94b;}
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .btn-light {
-            background: rgba(255,255,255,0.22);
-            color: white;
-        }
-        .btn-light:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        .calendar-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .nav-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            font-size:15px;
-            cursor: pointer;
-        }
-        .nav-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        .calendar-wrap {
-            background: #ffffff;
-            padding:24px;
-        }
-        .week-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-bottom:12px;
-        }
-        .week-cell {
-            text-align:center;
-            font-weight:500;
-            color:#4b78e8;
-            font-size:15px;
-        }
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7,1fr);
-            gap:10px;
-        }
-        .day-cell {
-            aspect-ratio: 1 / 1;
-            border:1px solid #e2e8f0;
-            border-radius:10px;
-            padding: 8px;
-            cursor: pointer;
-            position: relative;
-            display:flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: background .15s;
-        }
-        .day-cell:hover {
-            background-color: #f7fafc;
-        }
-        .day-cell.today {
-            background: linear-gradient(135deg, #4b78e8 0%, #805ad5 100%);
-            color:white;
-            border-color:#4b78e8;
-        }
-        .day-num {
-            font-size:16px;
-        }
-        .mark-wrap {
-            display:flex;
-            gap:3px;
-            justify-content: flex-end;
-            align-items: flex-end;
-        }
-        .mark-important {
-            width:8px;
-            height:8px;
-            border-radius:50%;
-            background:#f56565;
-        }
-        .mark-normal {
-            width:8px;
-            height:8px;
-            border-radius:50%;
-            background:#4299e1;
-        }
-        /* 弹窗 */
-        .modal-mask {
-            position: fixed;
-            inset:0;
-            background:rgba(0,0,0,0.45);
-            display:none;
-            align-items:center;
-            justify-content:center;
-            z-index: 99;
-        }
-        .modal-mask.show { display: flex; }
-        .modal {
-            background:#fff;
-            border-radius:14px;
-            width: min(92%,520px);
-            max-height: 90vh;
-            overflow-y: auto;
-            padding:24px;
-        }
-        .modal h3 {
-            margin-bottom:16px;
-        }
-        .form-item {
-            margin-bottom:14px;
-        }
-        .form-item label {
-            display:block;
-            margin-bottom:6px;
-            font-weight:500;
-            font-size: 14px;
-        }
-        textarea, select, input {
-            width:100%;
-            border:1px solid #cbd5e0;
-            border-radius:8px;
-            padding:10px;
-            font-size:15px;
-            font-family: inherit;
-        }
-        textarea:focus, select:focus, input:focus {
-            outline: none;
-            border-color: #4b78e8;
-        }
-        .modal-footer {
-            display:flex;
-            gap:10px;
-            justify-content:flex-end;
-            margin-top:18px;
-        }
-        /* 备忘列表 */
-        .memo-list {
-            margin:16px 0;
-            max-height:240px;
-            overflow-y:auto;
-        }
-        .memo-item {
-            padding:10px;
-            border-radius:8px;
-            border:1px solid #e2e8f0;
-            margin-bottom:8px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap: 10px;
-        }
-        .memo-item.important {
-            border-left:4px solid #f56565;
-        }
-        .memo-item.normal {
-            border-left:4px solid #4299e1;
-        }
-        .memo-ops { flex-shrink: 0; }
-        .memo-ops button {
-            border:none;
-            background:none;
-            color:#4b78e8;
-            cursor:pointer;
-            margin-left:8px;
-            font-size: 13px;
-        }
-        .memo-ops button:hover { text-decoration: underline; }
-        .memo-ops .del-btn { color: #e53e3e; }
-        .empty-tip {
-            text-align: center;
-            color: #a0aec0;
-            padding: 20px 0;
-            font-size: 14px;
-        }
-        .form-hint {
-            font-size: 12px;
-            color: #718096;
-            margin-top: 5px;
-            line-height: 1.5;
-        }
-        .form-hint a { color: #4b78e8; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>备忘录日历</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="备忘录日历">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      background-color: #f4f7fa;
+      padding: 12px;
+    }
+    .app-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .header-bar h1 {
+      font-size: 20px;
+    }
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover { background: #2563eb; }
+    .btn-secondary { background: #6b7280; }
+    .calendar-wrap {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 8px #00000012;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .week-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .week-name {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      padding: 4px;
+    }
+    .day-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .day-cell {
+      aspect-ratio: 1/1;
+      border-radius: 8px;
+      padding: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #eee;
+      position: relative;
+    }
+    .day-cell.active {
+      background: #dbeafe;
+      border-color: #3b82f6;
+    }
+    .day-cell.has-memo::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: #ef4444;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+    }
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 99;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 16px;
+    }
+    .modal-title {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    textarea, input[type=text] {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 16px;
+      margin: 8px 0;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+    .tip-text {
+      font-size: 13px;
+      color: #555;
+    }
+    .memo-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .memo-item img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin: 4px 0;
+    }
+    .memo-preview-box {
+      margin-top: 12px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="app-header">
-            <div class="app-title">备忘录日历</div>
-            <div class="status-bar">
-                <div class="status-text">
-                    <span class="status-dot status-error" id="syncDot"></span>
-                    <span id="syncText">未配置同步</span>
-                </div>
-                <div class="header-buttons">
-                    <button class="btn btn-light" id="syncBtn">立即同步</button>
-                    <button class="btn btn-light" id="settingBtn">设置</button>
-                </div>
-            </div>
-            <div class="calendar-nav">
-                <button class="nav-btn" id="prevMonth">上月</button>
-                <h2 id="monthTitle">2026年9月</h2>
-                <button class="nav-btn" id="nextMonth">下月</button>
-            </div>
-        </div>
-        <div class="calendar-wrap">
-            <div class="week-header">
-                <div class="week-cell">日</div>
-                <div class="week-cell">一</div>
-                <div class="week-cell">二</div>
-                <div class="week-cell">三</div>
-                <div class="week-cell">四</div>
-                <div class="week-cell">五</div>
-                <div class="week-cell">六</div>
-            </div>
-            <div class="days-grid" id="daysGrid"></div>
-        </div>
+<div class="app-container">
+  <div class="header-bar">
+    <h1>备忘录日历</h1>
+    <div>
+      <button class="btn" onclick="pullPushSync()">立即同步</button>
+      <button class="btn btn-secondary" onclick="openSettingModal()">设置</button>
     </div>
+  </div>
+  <div class="tip-text" id="syncStatus">同步：未加载</div>
+  <div class="calendar-wrap">
+    <div class="calendar-header">
+      <button class="btn" onclick="prevMonth()">&lt;</button>
+      <h2 id="monthTitle">2026-09</h2>
+      <button class="btn" onclick="nextMonth()">&gt;</button>
+    </div>
+    <div class="week-row">
+      <div class="week-name">日</div>
+      <div class="week-name">一</div>
+      <div class="week-name">二</div>
+      <div class="week-name">三</div>
+      <div class="week-name">四</div>
+      <div class="week-name">五</div>
+      <div class="week-name">六</div>
+    </div>
+    <div id="calendarBody" class="day-row"></div>
+  </div>
+</div>
 
-    <!-- 备忘编辑弹窗 -->
-    <div class="modal-mask" id="memoModal">
-        <div class="modal">
-            <h3 id="memoModalTitle">添加备忘</h3>
-            <input type="hidden" id="editDate">
-            <input type="hidden" id="editId">
-            <div class="form-item">
-                <label>备忘内容</label>
-                <textarea id="memoContent" rows="3" placeholder="输入备忘内容..."></textarea>
-            </div>
-            <div class="form-item">
-                <label>优先级</label>
-                <select id="memoPriority">
-                    <option value="normal">普通（蓝色标记）</option>
-                    <option value="important">重要（红色标记）</option>
-                </select>
-            </div>
-            <div class="memo-list" id="memoListWrap"></div>
-            <div class="modal-footer">
-                <button class="btn" id="closeMemoModal" style="background:#edf2f7;">取消</button>
-                <button class="btn btn-light" id="saveMemo" style="background:#4b78e8;">保存</button>
-            </div>
-        </div>
+<!-- 备忘编辑弹窗 -->
+<div class="modal-mask" id="memoModal">
+  <div class="modal-box">
+    <div class="modal-title" id="memoModalTitle">新增备忘</div>
+    <input type="text" id="memoDate" placeholder="日期 YYYY-MM-DD">
+    <textarea id="memoContent" rows="6" placeholder="输入备忘内容，可粘贴图片链接"></textarea>
+    <!-- 图片上传组件 -->
+    <div style="margin:10px 0;">
+      <input type="file" id="imgUploadInput" accept="image/*" style="display:none;">
+      <button onclick="document.getElementById('imgUploadInput').click()" class="btn">📷 上传图片（手机唤起相册）</button>
+      <div id="uploadTip" style="margin-top:6px;color:#666;"></div>
     </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeMemoModal()">取消</button>
+      <button class="btn" onclick="saveMemo()">保存</button>
+    </div>
+  </div>
+</div>
 
-    <!-- 设置弹窗 -->
-    <div class="modal-mask" id="settingModal">
-        <div class="modal">
-            <h3>Gist 同步设置</h3>
-            <div class="form-item">
-                <label>GitHub Token（需勾选 gist 权限）</label>
-                <input type="password" id="gistToken" placeholder="ghp_xxxxxxxxxxxx">
-                <div class="form-hint">
-                    到 <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub Token 设置页</a> 生成，勾选 gist 权限即可。
-                </div>
-            </div>
-            <div class="form-item">
-                <label>Gist ID（留空自动查找）</label>
-                <input type="text" id="gistId" placeholder="留空则自动查找已有备忘 Gist">
-                <div class="form-hint">首次使用留空，系统会自动创建或复用已有 Gist。</div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="closeSettingModal" style="background:#edf2f7;">取消</button>
-                <button class="btn btn-light" id="saveSetting" style="background:#4b78e8;">保存并同步</button>
-            </div>
-        </div>
+<!-- 备忘查看/编辑弹窗 -->
+<div class="modal-mask" id="viewModal">
+  <div class="modal-box">
+    <div class="modal-title" id="viewTitle">备忘详情</div>
+    <div id="viewContent" style="line-height:1.7;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="deleteMemo()">删除</button>
+      <button class="btn" onclick="editMemoFromView()">编辑</button>
+      <button class="btn btn-secondary" onclick="closeViewModal()">关闭</button>
     </div>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="modal-mask" id="settingModal">
+  <div class="modal-box">
+    <div class="modal-title">设置（Gist 同步）</div>
+    <div>Token</div>
+    <input type="text" id="cfgToken">
+    <div>Gist ID</div>
+    <input type="text" id="cfgGistId">
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeSettingModal()">取消</button>
+      <button class="btn" onclick="saveConfig()">保存设置</button>
+    </div>
+  </div>
+</div>
 
 <script>
-const STORAGE_KEY = "memo_calendar_config_v2";
-const MEMOS_KEY = "memo_calendar_data_v2";
-const FILE_NAME = "memos.json";
-const GIST_API = "https://api.github.com";
+// ========== 全局配置 ==========
+const imgRepoOwner = "figo-git";
+const imgRepoName = "img-storage";
+const imgBranch = "main";
 
 let state = {
-    memos: {},
-    config: { token: "", gistId: "" },
-    currentDate: new Date(),
-    syncTimer: null,
-    pollTimer: null
+  memos: [],
+  currentYear: new Date().getFullYear(),
+  currentMonth: new Date().getMonth()
 };
+let config = {
+  token: "",
+  gistId: ""
+};
+const STORAGE_KEY = "memo_calendar_config";
 
-function loadLocal() {
-    try {
-        const cfg = localStorage.getItem(STORAGE_KEY);
-        if (cfg) state.config = JSON.parse(cfg);
-        const memosRaw = localStorage.getItem(MEMOS_KEY);
-        if (memosRaw) state.memos = JSON.parse(memosRaw);
-        // 兼容旧版数据：v1 的 text/updatedAt → v2 的 content/updateAt，补默认 priority
-        migrateData(state.memos);
-    } catch(e) { console.warn(e); }
-    document.getElementById("gistToken").value = state.config.token;
-    document.getElementById("gistId").value = state.config.gistId;
-}
+let editingId = null;   // 正在编辑的备忘 id
+let viewingId = null;   // 正在查看的备忘 id
 
-/* 旧版数据迁移：text→content, updatedAt→updateAt, 补 priority=normal */
-function migrateData(memos) {
-    if (!memos) return;
-    Object.keys(memos).forEach(date => {
-        (memos[date] || []).forEach(m => {
-            if (m.content === undefined && m.text !== undefined) m.content = m.text;
-            if (m.updateAt === undefined && m.updatedAt !== undefined) m.updateAt = m.updatedAt;
-            if (!m.priority) m.priority = "normal";
-            if (m.deleted === undefined) m.deleted = false;
-        });
-    });
-}
-function saveLocal() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.config));
-    localStorage.setItem(MEMOS_KEY, JSON.stringify(state.memos));
-}
+// 页面加载初始化
+loadLocalConfig();
+renderCalendar();
+pullGist();
 
-function setSyncStatus(type, text) {
-    const dot = document.getElementById("syncDot");
-    const txt = document.getElementById("syncText");
-    dot.className = "status-dot";
-    if (type === "error") dot.classList.add("status-error");
-    if (type === "success") dot.classList.add("status-success");
-    if (type === "wait") dot.classList.add("status-wait");
-    txt.innerText = text;
-}
-
-/* fetch 带超时（默认10秒），防止网络慢时卡住轮询 */
-async function fetchWithTimeout(url, options, timeout) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), timeout || 10000);
-    try {
-        return await fetch(url, { ...options, signal: ctrl.signal });
-    } finally {
-        clearTimeout(timer);
-    }
-}
-
-function fmtDate(d) {
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    return `${y}-${m}-${day}`;
-}
-
-function renderCalendar() {
-    const year = state.currentDate.getFullYear();
-    const month = state.currentDate.getMonth();
-    document.getElementById("monthTitle").innerText = `${year}年${month+1}月`;
-    const grid = document.getElementById("daysGrid");
-    grid.innerHTML = "";
-    const firstDay = new Date(year, month, 1).getDay();
-    const totalDays = new Date(year, month+1, 0).getDate();
-    const today = new Date();
-    const todayStr = fmtDate(today);
-
-    for (let i = 0; i < firstDay; i++) {
-        const empty = document.createElement("div");
-        empty.className = "day-cell";
-        grid.appendChild(empty);
-    }
-    for (let d = 1; d <= totalDays; d++) {
-        const cell = document.createElement("div");
-        cell.className = "day-cell";
-        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if (dateStr === todayStr) cell.classList.add("today");
-
-        const dayNum = document.createElement("div");
-        dayNum.className = "day-num";
-        dayNum.innerText = d;
-
-        const markWrap = document.createElement("div");
-        markWrap.className = "mark-wrap";
-
-        const dayMemos = (state.memos[dateStr] || []).filter(m => !m.deleted);
-        if (dayMemos.length > 0) {
-            const hasImportant = dayMemos.some(m => m.priority === "important");
-            const dot = document.createElement("span");
-            dot.className = "mark-" + (hasImportant ? "important" : "normal");
-            markWrap.appendChild(dot);
+// ========== 图片上传模块 ==========
+async function compressImage(file, maxWidth = 1200, quality = 0.7) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width;
+        let h = img.height;
+        if (w > maxWidth) {
+          h = h * (maxWidth / w);
+          w = maxWidth;
         }
-
-        cell.appendChild(dayNum);
-        cell.appendChild(markWrap);
-        cell.onclick = () => openMemoModal(dateStr);
-        grid.appendChild(cell);
-    }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => resolve(blob), "image/jpeg", quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
-function openMemoModal(dateStr) {
-    document.getElementById("memoModal").classList.add("show");
-    document.getElementById("editDate").value = dateStr;
-    document.getElementById("editId").value = "";
-    document.getElementById("memoContent").value = "";
-    document.getElementById("memoPriority").value = "normal";
-    document.getElementById("memoModalTitle").innerText = `${dateStr} 添加备忘`;
-    renderDayMemoList(dateStr);
-}
-function closeMemoModal() {
-    document.getElementById("memoModal").classList.remove("show");
-}
-function renderDayMemoList(dateStr) {
-    const wrap = document.getElementById("memoListWrap");
-    wrap.innerHTML = "";
-    const list = (state.memos[dateStr] || []).filter(m => !m.deleted);
-    if (list.length === 0) {
-        wrap.innerHTML = '<div class="empty-tip">当天暂无备忘，在下方添加</div>';
-        return;
-    }
-    list.forEach(item => {
-        const div = document.createElement("div");
-        div.className = `memo-item ${item.priority}`;
-        const label = item.priority === "important" ? "重要" : "普通";
-        div.innerHTML = `
-            <div style="flex:1;word-break:break-word;">${escapeHtml(item.content)} <span style="font-size:12px;color:#a0aec0;margin-left:6px;">[${label}]</span></div>
-            <div class="memo-ops">
-                <button data-id="${item.id}" class="edit-memo">编辑</button>
-                <button data-id="${item.id}" class="del-memo del-btn">删除</button>
-            </div>
-        `;
-        wrap.appendChild(div);
-    });
-    document.querySelectorAll(".edit-memo").forEach(btn => {
-        btn.onclick = () => {
-            const id = btn.dataset.id;
-            const memo = (state.memos[dateStr] || []).find(m => m.id === id);
-            if (!memo) return;
-            document.getElementById("editId").value = id;
-            document.getElementById("memoContent").value = memo.content;
-            document.getElementById("memoPriority").value = memo.priority;
-            document.getElementById("memoModalTitle").innerText = `编辑备忘`;
-        };
-    });
-    document.querySelectorAll(".del-memo").forEach(btn => {
-        btn.onclick = () => {
-            const id = btn.dataset.id;
-            const arr = state.memos[dateStr] || [];
-            const memo = arr.find(m => m.id === id);
-            if (memo) {
-                memo.deleted = true;
-                memo.updateAt = Date.now();
-                saveLocal();
-                renderDayMemoList(dateStr);
-                renderCalendar();
-                debouncePush();
-            }
-        };
-    });
-}
-function escapeHtml(s) {
-    const div = document.createElement("div");
-    div.textContent = s;
-    return div.innerHTML;
+async function uploadImageToRepo(blob) {
+  const filename = `img_${Date.now()}.jpg`;
+  const filePath = `images/${filename}`;
+  const base64 = await new Promise(resolve => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(",")[1]);
+    r.readAsDataURL(blob);
+  });
+  const res = await fetch(`https://api.github.com/repos/${imgRepoOwner}/${imgRepoName}/contents/${filePath}`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `token ${config.token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: `upload image ${filename}`,
+      content: base64,
+      branch: imgBranch
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "上传图片失败");
+  }
+  return `https://cdn.jsdelivr.net/gh/${imgRepoOwner}/${imgRepoName}@${imgBranch}/${filePath}`;
 }
 
-function saveMemo() {
-    const date = document.getElementById("editDate").value;
-    const id = document.getElementById("editId").value;
-    const content = document.getElementById("memoContent").value.trim();
-    const priority = document.getElementById("memoPriority").value;
-    if (!content) { alert("请输入备忘内容"); return; }
-    if (!state.memos[date]) state.memos[date] = [];
-    if (id) {
-        const memo = state.memos[date].find(m => m.id === id);
-        if (memo) {
-            memo.content = content;
-            memo.priority = priority;
-            memo.updateAt = Date.now();
-            memo.deleted = false;
-        }
-    } else {
-        state.memos[date].push({
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
-            content: content,
-            priority: priority,
-            updateAt: Date.now(),
-            deleted: false
-        });
-    }
-    saveLocal();
-    closeMemoModal();
-    renderCalendar();
-    debouncePush();
+document.getElementById("imgUploadInput").addEventListener("change", async function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const tipDom = document.getElementById("uploadTip");
+  tipDom.textContent = "正在压缩并上传图片...";
+  try {
+    const compressedBlob = await compressImage(file);
+    const url = await uploadImageToRepo(compressedBlob);
+    tipDom.textContent = "✅ 上传成功";
+    document.getElementById("memoContent").value += `\n![图片](${url})`;
+  } catch (err) {
+    tipDom.textContent = "❌ 上传失败：" + err.message;
+    console.error(err);
+  }
+  e.target.value = "";
+});
+
+// ========== 备忘内容渲染：解析图片 Markdown ==========
+function renderMemoContent(text) {
+  let html = (text || "").replace(/!\[图片\]\((.+?)\)/g,
+    `<img src="$1" style="max-width:100%;border-radius:6px;margin:4px 0;" onclick="window.open('$1')">`);
+  html = html.replace(/\n/g, "<br>");
+  return html;
 }
 
-async function findOrCreateGist() {
-    const token = state.config.token;
-    if (!token) return null;
-    const listRes = await fetch(`${GIST_API}/gists?per_page=100`, {
-        headers: { Authorization: `token ${token}` }
-    });
-    if (!listRes.ok) throw new Error("Token 无效或无权限");
-    const gists = await listRes.json();
-    let best = null, bestCount = -1;
-    for (const g of gists) {
-        if (g.files && g.files[FILE_NAME]) {
-            try {
-                const parsed = JSON.parse(g.files[FILE_NAME].content || "{}");
-                const count = Object.values(parsed).reduce((s, arr) => s + (arr ? arr.length : 0), 0);
-                if (count > bestCount) { bestCount = count; best = g; }
-            } catch(e) {}
-        }
-    }
-    if (best) return best.id;
-    const createRes = await fetch(`${GIST_API}/gists`, {
-        method: "POST",
-        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-            description: "备忘录日历数据",
-            public: false,
-            files: { [FILE_NAME]: { content: "{}" } }
-        })
-    });
-    if (!createRes.ok) throw new Error("创建 Gist 失败");
-    const newGist = await createRes.json();
-    return newGist.id;
+// ========== 本地存储读写 ==========
+function loadLocalConfig() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    config = JSON.parse(raw);
+    state.memos = config.memos || [];
+    document.getElementById("cfgToken").value = config.token || "";
+    document.getElementById("cfgGistId").value = config.gistId || "";
+  }
+}
+function saveLocalConfig() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...config, memos: state.memos }));
 }
 
-function mergeMemos(local, remote) {
-    const result = {};
-    const allDates = new Set([...Object.keys(local), ...Object.keys(remote)]);
-    allDates.forEach(date => {
-        const map = {};
-        (local[date] || []).forEach(m => map[m.id] = m);
-        (remote[date] || []).forEach(m => {
-            if (!map[m.id] || (m.updateAt || 0) > (map[m.id].updateAt || 0)) {
-                map[m.id] = m;
-            }
-        });
-        const merged = Object.values(map).filter(m => !m.deleted);
-        if (merged.length > 0) result[date] = merged;
-    });
-    return result;
-}
-
+// ========== Gist 同步逻辑（云端优先合并） ==========
 async function pullGist() {
-    const token = state.config.token;
-    if (!token) throw new Error("未配置 Token");
-    let gistId = state.config.gistId;
-    if (!gistId) {
-        gistId = await findOrCreateGist();
-        state.config.gistId = gistId;
-        saveLocal();
+  if (!config.token || !config.gistId) {
+    setSyncStatus("请先填写 Token 和 Gist ID");
+    return;
+  }
+  setSyncStatus("拉取云端数据...");
+  try {
+    const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+      headers: { "Authorization": `token ${config.token}` }
+    });
+    const gist = await res.json();
+    if (!res.ok) throw new Error(gist.message);
+    const file = gist.files["memos.json"];
+    let remoteMemos = [];
+    if (file) {
+      const remoteData = JSON.parse(file.content);
+      remoteMemos = remoteData.memos || [];
     }
-    const res = await fetchWithTimeout(`${GIST_API}/gists/${gistId}`, {
-        headers: { Authorization: `token ${token}` }
-    }, 10000);
-    if (!res.ok) throw new Error("Gist 读取失败 HTTP " + res.status);
-    const data = await res.json();
-    const file = data.files[FILE_NAME];
-    let remote = {};
-    if (file && file.content) {
-        try { remote = JSON.parse(file.content); } catch(e) {}
-    }
-    migrateData(remote);
-    migrateData(state.memos);
-    state.memos = mergeMemos(state.memos, remote);
-    saveLocal();
+    // 云端优先合并：相同 id 时以云端 updateAt 为准；本地独有的记录保留
+    const localMap = {};
+    state.memos.forEach(item => { localMap[item.id] = item; });
+    const finalList = [];
+    remoteMemos.forEach(remoteItem => {
+      const localItem = localMap[remoteItem.id];
+      if (!localItem) {
+        finalList.push(remoteItem);
+      } else {
+        finalList.push(
+          (remoteItem.updateAt >= localItem.updateAt) ? remoteItem : localItem
+        );
+        delete localMap[remoteItem.id];
+      }
+    });
+    Object.values(localMap).forEach(leftover => finalList.push(leftover));
+    state.memos = finalList;
+    saveLocalConfig();
     renderCalendar();
-    console.log("[同步] 拉取完成，共", countMemos(state.memos), "条备忘");
-}
-
-function countMemos(memos) {
-    return Object.values(memos).reduce((s, arr) => s + (arr || []).filter(m => !m.deleted).length, 0);
+    setSyncStatus(`[同步] 云端优先拉取完成，共 ${state.memos.length} 条备忘`);
+  } catch (e) {
+    setSyncStatus("拉取失败：" + e.message);
+    console.error(e);
+  }
 }
 
 async function pushGist() {
-    const token = state.config.token;
-    if (!token) return;
-    let gistId = state.config.gistId;
-    if (!gistId) {
-        gistId = await findOrCreateGist();
-        state.config.gistId = gistId;
-        saveLocal();
-    }
-    await fetch(`${GIST_API}/gists/${gistId}`, {
-        method: "PATCH",
-        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-            files: { [FILE_NAME]: { content: JSON.stringify(state.memos) } }
-        })
-    });
-    console.log("[同步] 推送完成，共", countMemos(state.memos), "条备忘");
-}
-
-function debouncePush() {
-    clearTimeout(state.syncTimer);
-    state.syncTimer = setTimeout(() => {
-        pushGist().then(() => setSyncStatus("success", "已同步到 Gist")).catch(e => {
-            setSyncStatus("error", "推送失败");
-            console.warn(e);
-        });
-    }, 3000);
-}
-
-async function fullSync() {
-    try {
-        setSyncStatus("wait", "同步中...");
-        await pullGist();
-        // 拉取后把本地新数据推送回去
-        await pushGist();
-        const now = new Date().toLocaleTimeString("zh-CN");
-        setSyncStatus("success", `同步成功 · ${countMemos(state.memos)}条 · ${now}`);
-        console.log("[同步] fullSync 完成");
-    } catch (e) {
-        setSyncStatus("error", e.message);
-        console.error(e);
-    }
-}
-
-function startPollSync() {
-    clearInterval(state.pollTimer);
-    let pulling = false;
-    state.pollTimer = setInterval(() => {
-        if (!state.config.token || document.hidden || pulling) return;
-        pulling = true;
-        const before = JSON.stringify(state.memos);
-        pullGist().then(() => {
-            if (JSON.stringify(state.memos) !== before) {
-                renderCalendar();
-                setSyncStatus("success", "已自动同步到最新");
-            }
-        }).catch(() => {}).finally(() => { pulling = false; });
-    }, 15000);
-}
-
-function bindEvents() {
-    document.getElementById("prevMonth").onclick = () => {
-        state.currentDate.setMonth(state.currentDate.getMonth() - 1);
-        renderCalendar();
-    };
-    document.getElementById("nextMonth").onclick = () => {
-        state.currentDate.setMonth(state.currentDate.getMonth() + 1);
-        renderCalendar();
-    };
-    document.getElementById("syncBtn").onclick = fullSync;
-    document.getElementById("settingBtn").onclick = () => {
-        document.getElementById("settingModal").classList.add("show");
-    };
-    document.getElementById("closeSettingModal").onclick = () => {
-        document.getElementById("settingModal").classList.remove("show");
-    };
-    document.getElementById("saveSetting").onclick = () => {
-        state.config.token = document.getElementById("gistToken").value.trim();
-        state.config.gistId = document.getElementById("gistId").value.trim();
-        saveLocal();
-        document.getElementById("settingModal").classList.remove("show");
-        fullSync();
-        startPollSync();
-    };
-    document.getElementById("closeMemoModal").onclick = closeMemoModal;
-    document.getElementById("saveMemo").onclick = saveMemo;
-    document.querySelectorAll(".modal-mask").forEach(mask => {
-        mask.addEventListener("click", e => {
-            if (e.target === mask) mask.classList.remove("show");
-        });
-    });
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden && state.config.token) {
-            pullGist().then(() => renderCalendar()).catch(() => {});
+  if (!config.token || !config.gistId) return false;
+  setSyncStatus("推送数据到 Gist...");
+  try {
+    const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `token ${config.token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        description: "Memo Calendar Data (Auto-created)",
+        files: {
+          "memos.json": {
+            content: JSON.stringify({ memos: state.memos }, null, 2)
+          }
         }
+      })
     });
+    const ret = await res.json();
+    if (!res.ok) throw new Error(ret.message);
+    setSyncStatus(`[同步] 推送成功，共 ${state.memos.length} 条备忘`);
+    saveLocalConfig();
+    return true;
+  } catch (e) {
+    setSyncStatus("推送失败：" + e.message);
+    console.error(e);
+    return false;
+  }
 }
 
-loadLocal();
-renderCalendar();
-bindEvents();
-if (state.config.token) {
-    setTimeout(() => {
-        fullSync();
-        startPollSync();
-    }, 800);
+async function pullPushSync() {
+  await pullGist();
+  await pushGist();
+}
+
+// ========== 日历渲染 ==========
+function renderCalendar() {
+  const y = state.currentYear;
+  const m = state.currentMonth;
+  document.getElementById("monthTitle").innerText =
+    `${y}-${String(m + 1).padStart(2, "0")}`;
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysCount = new Date(y, m + 1, 0).getDate();
+  const wrap = document.getElementById("calendarBody");
+  wrap.innerHTML = "";
+  for (let i = 0; i < firstDay; i++) {
+    const d = document.createElement("div");
+    d.className = "day-cell";
+    wrap.appendChild(d);
+  }
+  for (let d = 1; d <= daysCount; d++) {
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+    const dateStr =
+      `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    cell.innerText = d;
+    const dayMemos = state.memos.filter(item => item.date === dateStr);
+    if (dayMemos.length > 0) cell.classList.add("has-memo");
+    cell.onclick = () => {
+      if (dayMemos.length === 0) {
+        openMemoModal(dateStr);
+      } else if (dayMemos.length === 1) {
+        openViewModal(dayMemos[0].id);
+      } else {
+        openMemoModal(dateStr);
+      }
+    };
+    wrap.appendChild(cell);
+  }
+}
+
+function prevMonth() {
+  state.currentMonth--;
+  if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+  renderCalendar();
+}
+function nextMonth() {
+  state.currentMonth++;
+  if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
+  renderCalendar();
+}
+
+// ========== 备忘编辑弹窗 ==========
+function openMemoModal(dateStr) {
+  editingId = null;
+  document.getElementById("memoModalTitle").innerText = "新增备忘";
+  document.getElementById("memoDate").value = dateStr ||
+    `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, "0")}-01`;
+  document.getElementById("memoContent").value = "";
+  document.getElementById("uploadTip").textContent = "";
+  document.getElementById("memoModal").style.display = "flex";
+}
+function closeMemoModal() {
+  document.getElementById("memoModal").style.display = "none";
+}
+function saveMemo() {
+  const date = document.getElementById("memoDate").value.trim();
+  const content = document.getElementById("memoContent").value;
+  if (!date) return alert("请填写日期");
+  if (editingId) {
+    const idx = state.memos.findIndex(x => x.id === editingId);
+    if (idx >= 0) {
+      state.memos[idx].date = date;
+      state.memos[idx].content = content;
+      state.memos[idx].updateAt = Date.now();
+    }
+  } else {
+    state.memos.push({
+      id: Date.now().toString(),
+      date,
+      content,
+      updateAt: Date.now()
+    });
+  }
+  saveLocalConfig();
+  closeMemoModal();
+  renderCalendar();
+}
+
+// ========== 备忘查看弹窗 ==========
+function openViewModal(id) {
+  const item = state.memos.find(x => x.id === id);
+  if (!item) return;
+  viewingId = id;
+  document.getElementById("viewTitle").innerText = `备忘 · ${item.date}`;
+  document.getElementById("viewContent").innerHTML = renderMemoContent(item.content);
+  document.getElementById("viewModal").style.display = "flex";
+}
+function closeViewModal() {
+  document.getElementById("viewModal").style.display = "none";
+  viewingId = null;
+}
+function editMemoFromView() {
+  const item = state.memos.find(x => x.id === viewingId);
+  if (!item) return;
+  closeViewModal();
+  editingId = item.id;
+  document.getElementById("memoModalTitle").innerText = "编辑备忘";
+  document.getElementById("memoDate").value = item.date;
+  document.getElementById("memoContent").value = item.content;
+  document.getElementById("uploadTip").textContent = "";
+  document.getElementById("memoModal").style.display = "flex";
+}
+function deleteMemo() {
+  if (!viewingId) return;
+  if (!confirm("确定删除这条备忘吗？")) return;
+  state.memos = state.memos.filter(x => x.id !== viewingId);
+  saveLocalConfig();
+  closeViewModal();
+  renderCalendar();
+}
+
+// ========== 设置弹窗 ==========
+function openSettingModal() {
+  document.getElementById("settingModal").style.display = "flex";
+}
+function closeSettingModal() {
+  document.getElementById("settingModal").style.display = "none";
+}
+function saveConfig() {
+  config.token = document.getElementById("cfgToken").value.trim();
+  config.gistId = document.getElementById("cfgGistId").value.trim();
+  saveLocalConfig();
+  closeSettingModal();
+  alert("设置保存成功");
+  pullGist();
+}
+function setSyncStatus(text) {
+  document.getElementById("syncStatus").innerText = text;
 }
 </script>
 </body>
