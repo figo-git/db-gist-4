@@ -8,147 +8,34 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="备忘录日历">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    body {
-      background-color: #f4f7fa;
-      padding: 12px;
-    }
-    .app-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .header-bar h1 {
-      font-size: 20px;
-    }
-    .btn {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      background: #3b82f6;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background-color: #f4f7fa; padding: 12px; }
+    .app-container { max-width: 900px; margin: 0 auto; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .header-bar h1 { font-size: 20px; }
+    .btn { padding: 8px 14px; border: none; border-radius: 8px; background: #3b82f6; color: #fff; cursor: pointer; font-size: 14px; }
     .btn:hover { background: #2563eb; }
     .btn-secondary { background: #6b7280; }
-    .calendar-wrap {
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 2px 8px #00000012;
-    }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .week-row {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-    .week-name {
-      text-align: center;
-      font-size: 13px;
-      color: #666;
-      padding: 4px;
-    }
-    .day-row {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-    .day-cell {
-      aspect-ratio: 1/1;
-      border-radius: 8px;
-      padding: 4px;
-      font-size: 14px;
-      cursor: pointer;
-      border: 1px solid #eee;
-      position: relative;
-    }
-    .day-cell.active {
-      background: #dbeafe;
-      border-color: #3b82f6;
-    }
-    .day-cell.has-memo::after {
-      content: "";
-      width: 6px;
-      height: 6px;
-      background: #ef4444;
-      border-radius: 50%;
-      position: absolute;
-      bottom: 4px;
-      right: 4px;
-    }
-    .modal-mask {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 99;
-    }
-    .modal-box {
-      background: #fff;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 520px;
-      max-height: 90vh;
-      overflow: auto;
-      padding: 16px;
-    }
-    .modal-title {
-      font-size: 18px;
-      margin-bottom: 12px;
-    }
-    textarea, input[type=text] {
-      width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 16px;
-      margin: 8px 0;
-    }
-    .modal-footer {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 12px;
-    }
-    .tip-text {
-      font-size: 13px;
-      color: #555;
-    }
-    .memo-item {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .memo-item img {
-      max-width: 100%;
-      border-radius: 6px;
-      margin: 4px 0;
-    }
-    .memo-preview-box {
-      margin-top: 12px;
-      border-top: 1px solid #eee;
-      padding-top: 10px;
-    }
+    .calendar-wrap { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 2px 8px #00000012; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
+    .week-name { text-align: center; font-size: 13px; color: #666; padding: 4px; }
+    .day-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .day-cell { aspect-ratio: 1/1; border-radius: 8px; padding: 4px; font-size: 14px; cursor: pointer; border: 1px solid #eee; position: relative; display: flex; align-items: flex-start; }
+    .day-cell .day-num { line-height: 1; }
+    .day-cell.has-memo::after { content: ""; width: 7px; height: 7px; background: #94a3b8; border-radius: 50%; position: absolute; bottom: 5px; right: 5px; }
+    .day-cell.has-important::after { background: #ef4444; width: 9px; height: 9px; bottom: 4px; right: 4px; box-shadow: 0 0 0 2px #fff; }
+    .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 99; }
+    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; padding: 16px; }
+    .modal-title { font-size: 18px; margin-bottom: 12px; }
+    textarea, input[type=text], select { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 16px; margin: 8px 0; background: #fff; }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
+    .tip-text { font-size: 13px; color: #555; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 8px; vertical-align: middle; }
+    .badge-important { background: #fee2e2; color: #dc2626; }
+    .badge-normal { background: #e2e8f0; color: #475569; }
+    .memo-item img { max-width: 100%; border-radius: 6px; margin: 4px 0; }
+    .row-label { font-size: 13px; color: #666; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -184,9 +71,15 @@
 <div class="modal-mask" id="memoModal">
   <div class="modal-box">
     <div class="modal-title" id="memoModalTitle">新增备忘</div>
-    <input type="text" id="memoDate" placeholder="日期 YYYY-MM-DD">
+    <div class="row-label">日期</div>
+    <input type="text" id="memoDate" placeholder="YYYY-MM-DD">
+    <div class="row-label">优先级</div>
+    <select id="memoPriority">
+      <option value="normal">普通</option>
+      <option value="important">重要</option>
+    </select>
+    <div class="row-label">内容</div>
     <textarea id="memoContent" rows="6" placeholder="输入备忘内容，可粘贴图片链接"></textarea>
-    <!-- 图片上传组件 -->
     <div style="margin:10px 0;">
       <input type="file" id="imgUploadInput" accept="image/*" style="display:none;">
       <button onclick="document.getElementById('imgUploadInput').click()" class="btn">📷 上传图片（手机唤起相册）</button>
@@ -199,7 +92,7 @@
   </div>
 </div>
 
-<!-- 备忘查看/编辑弹窗 -->
+<!-- 备忘查看弹窗 -->
 <div class="modal-mask" id="viewModal">
   <div class="modal-box">
     <div class="modal-title" id="viewTitle">备忘详情</div>
@@ -216,10 +109,13 @@
 <div class="modal-mask" id="settingModal">
   <div class="modal-box">
     <div class="modal-title">设置（Gist 同步）</div>
-    <div>Token</div>
+    <div class="row-label">Token</div>
     <input type="text" id="cfgToken">
-    <div>Gist ID</div>
+    <div class="row-label">Gist ID</div>
     <input type="text" id="cfgGistId">
+    <div class="tip-text" style="margin-top:8px;">
+      提示：可在网址后加 <code>?gistid=xxx&token=xxx</code> 自动填充配置。
+    </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeSettingModal()">取消</button>
       <button class="btn" onclick="saveConfig()">保存设置</button>
@@ -238,21 +134,34 @@ let state = {
   currentYear: new Date().getFullYear(),
   currentMonth: new Date().getMonth()
 };
-let config = {
-  token: "",
-  gistId: ""
-};
+let config = { token: "", gistId: "" };
 const STORAGE_KEY = "memo_calendar_config";
 
-let editingId = null;   // 正在编辑的备忘 id
-let viewingId = null;   // 正在查看的备忘 id
+let editingId = null;
+let viewingId = null;
+let isSyncing = false;
+let isUploading = false;
 
-// 页面加载初始化
+// ========== URL 参数自动填充（方案A） ==========
+function applyUrlConfig() {
+  const params = new URLSearchParams(window.location.search);
+  const gistid = params.get("gistid");
+  const token = params.get("token");
+  if (gistid) config.gistId = gistid.trim();
+  if (token) config.token = token.trim();
+  if (gistid || token) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...config, memos: state.memos }));
+    setSyncStatus("已从链接自动填入配置");
+  }
+}
+
+// ========== 初始化 ==========
 loadLocalConfig();
+applyUrlConfig();
 renderCalendar();
 pullGist();
 
-// ========== 图片上传模块 ==========
+// ========== 图片上传 ==========
 async function compressImage(file, maxWidth = 1200, quality = 0.7) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -260,14 +169,9 @@ async function compressImage(file, maxWidth = 1200, quality = 0.7) {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        let w = img.width;
-        let h = img.height;
-        if (w > maxWidth) {
-          h = h * (maxWidth / w);
-          w = maxWidth;
-        }
-        canvas.width = w;
-        canvas.height = h;
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = h * (maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, w, h);
         canvas.toBlob(blob => resolve(blob), "image/jpeg", quality);
@@ -288,15 +192,8 @@ async function uploadImageToRepo(blob) {
   });
   const res = await fetch(`https://api.github.com/repos/${imgRepoOwner}/${imgRepoName}/contents/${filePath}`, {
     method: "PUT",
-    headers: {
-      "Authorization": `token ${config.token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: `upload image ${filename}`,
-      content: base64,
-      branch: imgBranch
-    })
+    headers: { "Authorization": `token ${config.token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ message: `upload image ${filename}`, content: base64, branch: imgBranch })
   });
   if (!res.ok) {
     const err = await res.json();
@@ -309,6 +206,8 @@ document.getElementById("imgUploadInput").addEventListener("change", async funct
   const file = e.target.files[0];
   if (!file) return;
   const tipDom = document.getElementById("uploadTip");
+  if (isUploading) { tipDom.textContent = "正在上传中，请稍候"; return; }
+  isUploading = true;
   tipDom.textContent = "正在压缩并上传图片...";
   try {
     const compressedBlob = await compressImage(file);
@@ -318,11 +217,13 @@ document.getElementById("imgUploadInput").addEventListener("change", async funct
   } catch (err) {
     tipDom.textContent = "❌ 上传失败：" + err.message;
     console.error(err);
+  } finally {
+    isUploading = false;
+    e.target.value = "";
   }
-  e.target.value = "";
 });
 
-// ========== 备忘内容渲染：解析图片 Markdown ==========
+// ========== 渲染 ==========
 function renderMemoContent(text) {
   let html = (text || "").replace(/!\[图片\]\((.+?)\)/g,
     `<img src="$1" style="max-width:100%;border-radius:6px;margin:4px 0;" onclick="window.open('$1')">`);
@@ -330,26 +231,28 @@ function renderMemoContent(text) {
   return html;
 }
 
-// ========== 本地存储读写 ==========
+// ========== 本地存储 ==========
 function loadLocalConfig() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) {
     config = JSON.parse(raw);
     state.memos = config.memos || [];
-    document.getElementById("cfgToken").value = config.token || "";
-    document.getElementById("cfgGistId").value = config.gistId || "";
   }
+  document.getElementById("cfgToken").value = config.token || "";
+  document.getElementById("cfgGistId").value = config.gistId || "";
 }
 function saveLocalConfig() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...config, memos: state.memos }));
 }
 
-// ========== Gist 同步逻辑（云端优先合并） ==========
+// ========== Gist 同步（云端优先合并） ==========
 async function pullGist() {
   if (!config.token || !config.gistId) {
     setSyncStatus("请先填写 Token 和 Gist ID");
     return;
   }
+  if (isSyncing) return;
+  isSyncing = true;
   setSyncStatus("拉取云端数据...");
   try {
     const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
@@ -363,7 +266,6 @@ async function pullGist() {
       const remoteData = JSON.parse(file.content);
       remoteMemos = remoteData.memos || [];
     }
-    // 云端优先合并：相同 id 时以云端 updateAt 为准；本地独有的记录保留
     const localMap = {};
     state.memos.forEach(item => { localMap[item.id] = item; });
     const finalList = [];
@@ -372,9 +274,7 @@ async function pullGist() {
       if (!localItem) {
         finalList.push(remoteItem);
       } else {
-        finalList.push(
-          (remoteItem.updateAt >= localItem.updateAt) ? remoteItem : localItem
-        );
+        finalList.push(remoteItem.updateAt >= localItem.updateAt ? remoteItem : localItem);
         delete localMap[remoteItem.id];
       }
     });
@@ -386,6 +286,8 @@ async function pullGist() {
   } catch (e) {
     setSyncStatus("拉取失败：" + e.message);
     console.error(e);
+  } finally {
+    isSyncing = false;
   }
 }
 
@@ -395,17 +297,10 @@ async function pushGist() {
   try {
     const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
       method: "PATCH",
-      headers: {
-        "Authorization": `token ${config.token}`,
-        "Content-Type": "application/json"
-      },
+      headers: { "Authorization": `token ${config.token}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        description: "Memo Calendar Data (Auto-created)",
-        files: {
-          "memos.json": {
-            content: JSON.stringify({ memos: state.memos }, null, 2)
-          }
-        }
+        description: "Memo Calendar Data",
+        files: { "memos.json": { content: JSON.stringify({ memos: state.memos }, null, 2) } }
       })
     });
     const ret = await res.json();
@@ -425,12 +320,10 @@ async function pullPushSync() {
   await pushGist();
 }
 
-// ========== 日历渲染 ==========
+// ========== 日历 ==========
 function renderCalendar() {
-  const y = state.currentYear;
-  const m = state.currentMonth;
-  document.getElementById("monthTitle").innerText =
-    `${y}-${String(m + 1).padStart(2, "0")}`;
+  const y = state.currentYear, m = state.currentMonth;
+  document.getElementById("monthTitle").innerText = `${y}-${String(m + 1).padStart(2, "0")}`;
   const firstDay = new Date(y, m, 1).getDay();
   const daysCount = new Date(y, m + 1, 0).getDate();
   const wrap = document.getElementById("calendarBody");
@@ -443,24 +336,22 @@ function renderCalendar() {
   for (let d = 1; d <= daysCount; d++) {
     const cell = document.createElement("div");
     cell.className = "day-cell";
-    const dateStr =
-      `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    cell.innerText = d;
+    const dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    cell.innerHTML = `<span class="day-num">${d}</span>`;
     const dayMemos = state.memos.filter(item => item.date === dateStr);
-    if (dayMemos.length > 0) cell.classList.add("has-memo");
+    if (dayMemos.length > 0) {
+      cell.classList.add("has-memo");
+      const hasImportant = dayMemos.some(x => x.priority === "important");
+      if (hasImportant) cell.classList.add("has-important");
+    }
     cell.onclick = () => {
-      if (dayMemos.length === 0) {
-        openMemoModal(dateStr);
-      } else if (dayMemos.length === 1) {
-        openViewModal(dayMemos[0].id);
-      } else {
-        openMemoModal(dateStr);
-      }
+      if (dayMemos.length === 0) openMemoModal(dateStr);
+      else if (dayMemos.length === 1) openViewModal(dayMemos[0].id);
+      else openMemoModal(dateStr);
     };
     wrap.appendChild(cell);
   }
 }
-
 function prevMonth() {
   state.currentMonth--;
   if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
@@ -472,56 +363,52 @@ function nextMonth() {
   renderCalendar();
 }
 
-// ========== 备忘编辑弹窗 ==========
+// ========== 备忘编辑 ==========
 function openMemoModal(dateStr) {
   editingId = null;
   document.getElementById("memoModalTitle").innerText = "新增备忘";
   document.getElementById("memoDate").value = dateStr ||
     `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, "0")}-01`;
+  document.getElementById("memoPriority").value = "normal";
   document.getElementById("memoContent").value = "";
   document.getElementById("uploadTip").textContent = "";
   document.getElementById("memoModal").style.display = "flex";
 }
-function closeMemoModal() {
-  document.getElementById("memoModal").style.display = "none";
-}
+function closeMemoModal() { document.getElementById("memoModal").style.display = "none"; }
 function saveMemo() {
   const date = document.getElementById("memoDate").value.trim();
   const content = document.getElementById("memoContent").value;
+  const priority = document.getElementById("memoPriority").value;
   if (!date) return alert("请填写日期");
   if (editingId) {
     const idx = state.memos.findIndex(x => x.id === editingId);
     if (idx >= 0) {
       state.memos[idx].date = date;
       state.memos[idx].content = content;
+      state.memos[idx].priority = priority;
       state.memos[idx].updateAt = Date.now();
     }
   } else {
-    state.memos.push({
-      id: Date.now().toString(),
-      date,
-      content,
-      updateAt: Date.now()
-    });
+    state.memos.push({ id: Date.now().toString(), date, content, priority, updateAt: Date.now() });
   }
   saveLocalConfig();
   closeMemoModal();
   renderCalendar();
 }
 
-// ========== 备忘查看弹窗 ==========
+// ========== 备忘查看 ==========
 function openViewModal(id) {
   const item = state.memos.find(x => x.id === id);
   if (!item) return;
   viewingId = id;
-  document.getElementById("viewTitle").innerText = `备忘 · ${item.date}`;
+  const badge = item.priority === "important"
+    ? `<span class="badge badge-important">重要</span>`
+    : `<span class="badge badge-normal">普通</span>`;
+  document.getElementById("viewTitle").innerHTML = `备忘 · ${item.date} ${badge}`;
   document.getElementById("viewContent").innerHTML = renderMemoContent(item.content);
   document.getElementById("viewModal").style.display = "flex";
 }
-function closeViewModal() {
-  document.getElementById("viewModal").style.display = "none";
-  viewingId = null;
-}
+function closeViewModal() { document.getElementById("viewModal").style.display = "none"; viewingId = null; }
 function editMemoFromView() {
   const item = state.memos.find(x => x.id === viewingId);
   if (!item) return;
@@ -529,6 +416,7 @@ function editMemoFromView() {
   editingId = item.id;
   document.getElementById("memoModalTitle").innerText = "编辑备忘";
   document.getElementById("memoDate").value = item.date;
+  document.getElementById("memoPriority").value = item.priority || "normal";
   document.getElementById("memoContent").value = item.content;
   document.getElementById("uploadTip").textContent = "";
   document.getElementById("memoModal").style.display = "flex";
@@ -542,13 +430,9 @@ function deleteMemo() {
   renderCalendar();
 }
 
-// ========== 设置弹窗 ==========
-function openSettingModal() {
-  document.getElementById("settingModal").style.display = "flex";
-}
-function closeSettingModal() {
-  document.getElementById("settingModal").style.display = "none";
-}
+// ========== 设置 ==========
+function openSettingModal() { document.getElementById("settingModal").style.display = "flex"; }
+function closeSettingModal() { document.getElementById("settingModal").style.display = "none"; }
 function saveConfig() {
   config.token = document.getElementById("cfgToken").value.trim();
   config.gistId = document.getElementById("cfgGistId").value.trim();
@@ -557,9 +441,7 @@ function saveConfig() {
   alert("设置保存成功");
   pullGist();
 }
-function setSyncStatus(text) {
-  document.getElementById("syncStatus").innerText = text;
-}
+function setSyncStatus(text) { document.getElementById("syncStatus").innerText = text; }
 </script>
 </body>
 </html>
